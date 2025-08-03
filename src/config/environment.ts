@@ -10,7 +10,7 @@ const getEnvironmentConfig = (): EnvironmentConfig => {
 
   if (isProduction) {
     return {
-      apiUrl: "https://api.freespeek.net",
+      apiUrl: "https://api.freespeek.net/api`",
       adminSecret: "freepeek08072024",
       environment: "production",
     };
