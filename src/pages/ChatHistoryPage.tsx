@@ -1,68 +1,68 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { fetchMessages } from "../store/slices/messagesSlice";
-import { Send, ArrowLeft } from "lucide-react";
+import {
+  fetchChatHistory,
+  ChatHistoryMessage,
+} from "../store/slices/chatHistorySlice";
+import { ArrowLeft } from "lucide-react";
 import Loader from "../components/Loader";
 
-interface Message {
-  _id: string;
-  content: string;
-  sender: {
-    _id: string;
-    firstName: string;
-    lastName: string;
-    fullName: string;
-    email: string;
-    profilePicture: string;
-  };
-  chat: {
-    _id: string;
-    name: string;
-    isGroupChat: boolean;
-    participants: string[];
-  };
-  createdAt: string;
-  lastMessage: string;
-}
-
-const ChatDetailsPage: React.FC = () => {
+const ChatHistoryPage: React.FC = () => {
   const { chatId } = useParams<{ chatId: string }>();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { messages, isLoading, error } = useAppSelector(
-    (state: any) => state.messages
-  );
-  const [newMessage, setNewMessage] = useState("");
+  const {
+    chat,
+    messages,
+    isLoading,
+    error,
+    currentPage,
+    hasNextPage,
+    hasPrevPage,
+  } = useAppSelector((state: any) => state.chatHistory);
+  //   const [newMessage, setNewMessage] = useState("");
 
   useEffect(() => {
     if (chatId) {
       dispatch(
-        fetchMessages({
+        fetchChatHistory({
+          chatId,
           page: 1,
           limit: 50,
-          chatId: chatId,
         })
       );
     }
   }, [dispatch, chatId]);
 
-  const handleSendMessage = () => {
-    if (newMessage.trim()) {
-      // TODO: Implement send message functionality
-      console.log("Sending message:", newMessage);
-      setNewMessage("");
+  //   const handleSendMessage = () => {
+  //     if (newMessage.trim()) {
+  //       // TODO: Implement send message functionality
+  //       console.log("Sending message:", newMessage);
+  //       setNewMessage("");
+  //     }
+  //   };
+
+  //   const handleKeyPress = (e: React.KeyboardEvent) => {
+  //     if (e.key === "Enter" && !e.shiftKey) {
+  //       e.preventDefault();
+  //       handleSendMessage();
+  //     }
+  //   };
+
+  const handleLoadMore = () => {
+    if (hasNextPage && chatId) {
+      dispatch(
+        fetchChatHistory({
+          chatId,
+          page: currentPage + 1,
+          limit: 50,
+        })
+      );
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
-    }
-  };
-
-  if (isLoading) {
+  if (isLoading && !chat) {
     return (
       <div className="flex items-center justify-center h-64">
         <Loader size="lg" />
@@ -73,13 +73,18 @@ const ChatDetailsPage: React.FC = () => {
   if (error) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-red-600">Error loading chat: {error}</div>
+        <div className="text-red-600">Error loading chat history: {error}</div>
       </div>
     );
   }
 
-  const chatName = messages.length > 0 ? messages[0].chat.name : "Chat";
-  const chatParticipant = messages.length > 0 ? messages[0].sender : null;
+  if (!chat) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <p className="text-gray-500">Chat not found</p>
+      </div>
+    );
+  }
 
   return (
     <div className="h-full flex flex-col bg-white rounded-lg shadow-sm border border-gray-200">
@@ -87,7 +92,7 @@ const ChatDetailsPage: React.FC = () => {
       <div className="flex items-center justify-between p-4 border-b border-gray-200">
         <div className="flex items-center space-x-3">
           <button
-            onClick={() => navigate("/chats")}
+            onClick={() => navigate("/messages")}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
           >
             <ArrowLeft className="h-5 w-5 text-gray-600" />
@@ -95,20 +100,40 @@ const ChatDetailsPage: React.FC = () => {
           <div className="flex items-center space-x-3">
             <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
               <span className="text-sm font-medium text-gray-700">
-                {chatName.charAt(0).toUpperCase()}
+                {chat.participants[0]?.fullName.charAt(0).toUpperCase() || "C"}
               </span>
             </div>
             <div>
               <h2 className="text-lg font-semibold text-gray-900">
-                {chatName}
+                {chat.isGroupChat ? "Group Chat" : "Direct Chat"}
               </h2>
               <p className="text-sm text-gray-500">
-                {chatParticipant ? chatParticipant.fullName : "Loading..."}
+                {chat.participants.map((p: any) => p.fullName).join(", ")}
               </p>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Load More Button */}
+      {hasPrevPage && (
+        <div className="p-4 border-b border-gray-200">
+          <button
+            onClick={handleLoadMore}
+            disabled={isLoading}
+            className="w-full py-2 px-4 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 disabled:opacity-50 transition-colors"
+          >
+            {isLoading ? (
+              <div className="flex items-center justify-center">
+                <Loader size="sm" />
+                <span className="ml-2">Loading...</span>
+              </div>
+            ) : (
+              "Load More Messages"
+            )}
+          </button>
+        </div>
+      )}
 
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
@@ -119,7 +144,7 @@ const ChatDetailsPage: React.FC = () => {
             </p>
           </div>
         ) : (
-          messages.map((message: Message) => (
+          messages.map((message: ChatHistoryMessage) => (
             <div
               key={message._id}
               className={`flex ${
@@ -133,16 +158,21 @@ const ChatDetailsPage: React.FC = () => {
                     : "bg-gray-200 text-gray-900"
                 }`}
               >
+                <div className="flex items-center space-x-2 mb-1">
+                  <span className="text-xs font-medium">
+                    {message.sender.fullName}
+                  </span>
+                  <span
+                    className={`text-xs ${
+                      message.sender._id === "admin"
+                        ? "text-blue-100"
+                        : "text-gray-500"
+                    }`}
+                  >
+                    {new Date(message.createdAt).toLocaleString()}
+                  </span>
+                </div>
                 <p className="text-sm">{message.content}</p>
-                <p
-                  className={`text-xs mt-1 ${
-                    message.sender._id === "admin"
-                      ? "text-blue-100"
-                      : "text-gray-500"
-                  }`}
-                >
-                  {new Date(message.createdAt).toLocaleString()}
-                </p>
               </div>
             </div>
           ))
@@ -150,7 +180,7 @@ const ChatDetailsPage: React.FC = () => {
       </div>
 
       {/* Message Input */}
-      <div className="p-4 border-t border-gray-200">
+      {/* <div className="p-4 border-t border-gray-200">
         <div className="flex items-center space-x-3">
           <input
             type="text"
@@ -168,9 +198,9 @@ const ChatDetailsPage: React.FC = () => {
             <Send className="h-5 w-5" />
           </button>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
 
-export default ChatDetailsPage;
+export default ChatHistoryPage;

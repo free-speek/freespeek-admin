@@ -14,6 +14,8 @@ import SupportChatsPage from "./pages/SupportChatsPage";
 import UserProfilePage from "./pages/UserProfilePage";
 import ChatDetailsPage from "./pages/ChatDetailsPage";
 import ChatsPage from "./pages/ChatsPage";
+import MessagesPage from "./pages/MessagesPage";
+import ChatHistoryPage from "./pages/ChatHistoryPage";
 import { AuthProvider } from "./contexts/AuthContext";
 import { store } from "./store";
 
@@ -33,6 +35,12 @@ const App: React.FC = () => {
               <Route
                 path="chat-details/:chatId"
                 element={<ChatDetailsPage />}
+              />
+              <Route path="chats" element={<ChatsPage />} />
+              <Route path="messages" element={<MessagesPage />} />
+              <Route
+                path="chat-history/:chatId"
+                element={<ChatHistoryPage />}
               />
               <Route
                 path="statistics"
@@ -76,7 +84,6 @@ const App: React.FC = () => {
                   </div>
                 }
               />
-              <Route path="chats" element={<ChatsPage />} />
               <Route
                 path="campaign"
                 element={

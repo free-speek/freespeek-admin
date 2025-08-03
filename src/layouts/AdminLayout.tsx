@@ -13,6 +13,7 @@ import {
   Search,
   Settings,
   LogOut,
+  MessageSquare,
 } from "lucide-react";
 import { NavigationItem } from "../types";
 import logoText from "../assets/logoText.png";
@@ -25,53 +26,25 @@ const navigationItems: NavigationItem[] = [
     icon: "LayoutDashboard",
     path: "/dashboard",
   },
-  // {
-  //   id: "statistics",
-  //   label: "Statistics",
-  //   icon: "BarChart3",
-  //   path: "/statistics",
-  // },
-  // {
-  //   id: "interactions-dashboard",
-  //   label: "Interactions Dashboard",
-  //   icon: "LayoutDashboard",
-  //   path: "/interactions-dashboard",
-  // },
-  // { id: "dau-mau", label: "DAU/MAU", icon: "Users", path: "/dau-mau" },
   {
     id: "freespeek-users",
     label: "Freespeek Users",
     icon: "Users",
     path: "/freespeek-users",
   },
-  // {
-  //   id: "create-test-user",
-  //   label: "Create Test User",
-  //   icon: "UserPlus",
-  //   path: "/create-test-user",
-  // },
-  // {
-  //   id: "interactions",
-  //   label: "Interactions",
-  //   icon: "MessageCircle",
-  //   path: "/interactions",
-  // },
-  { id: "chats", label: "Chats", icon: "MessageCircle", path: "/chats" },
-  // { id: "campaign", label: "Campaign", icon: "FileText", path: "/campaign" },
-  // {
-  //   id: "create-campaign",
-  //   label: "Create Campaign",
-  //   icon: "FileText",
-  //   path: "/create-campaign",
-  // },
+  // { id: "chats", label: "Chats", icon: "MessageCircle", path: "/chats" },
+  {
+    id: "messages",
+    label: "Messages",
+    icon: "MessageSquare",
+    path: "/messages",
+  },
   {
     id: "support-chats",
     label: "Support Chats",
     icon: "MessageCircle",
     path: "/support-chats",
   },
-  // { id: "language", label: "Language", icon: "Globe", path: "/language" },
-  // { id: "hotspots", label: "Hotspots", icon: "MapPin", path: "/hotspots" },
 ];
 
 const getIconComponent = (iconName: string) => {
@@ -85,6 +58,7 @@ const getIconComponent = (iconName: string) => {
     Plus,
     Globe,
     MapPin,
+    MessageSquare,
   };
   return iconMap[iconName] || LayoutDashboard;
 };
@@ -139,9 +113,12 @@ const AdminLayout: React.FC = () => {
                   {location.pathname === "/freespeek-users" &&
                     "Freespeek Users"}
                   {location.pathname === "/chats" && "Chats"}
+                  {location.pathname === "/messages" && "Messages"}
                   {location.pathname === "/support-chats" && "Support Chats"}
                   {location.pathname.startsWith("/chat-details") &&
                     "Chat Details"}
+                  {location.pathname.startsWith("/chat-history") &&
+                    "Chat History"}
                   {location.pathname.startsWith("/user-profile") &&
                     "User Profile"}
                 </span>

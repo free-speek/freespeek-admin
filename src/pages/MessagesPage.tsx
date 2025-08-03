@@ -3,31 +3,15 @@ import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { fetchChats } from "../store/slices/chatsSlice";
 import {
-  MessageCircle,
   RefreshCw,
   ChevronLeft,
   ChevronRight,
+  Search,
+  MessageCircle,
 } from "lucide-react";
 import Loader from "../components/Loader";
 
-interface Chat {
-  _id: string;
-  name: string;
-  isGroupChat: boolean;
-  participants: string[];
-  lastMessage?: {
-    content: string;
-    sender: {
-      _id: string;
-      fullName: string;
-    };
-    createdAt: string;
-  };
-  createdAt: string;
-  updatedAt: string;
-}
-
-const ChatsPage: React.FC = () => {
+const MessagesPage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { chats, isLoading, error, totalPages, totalChats } = useAppSelector(
@@ -41,18 +25,22 @@ const ChatsPage: React.FC = () => {
     dispatch(
       fetchChats({
         page: localCurrentPage,
-        limit: 10,
+        limit: 20,
         search: searchTerm,
       })
     );
   }, [dispatch, searchTerm, localCurrentPage]);
+
+  console.log("MessagesPage - chats:", chats);
+  console.log("MessagesPage - isLoading:", isLoading);
+  console.log("MessagesPage - error:", error);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
     await dispatch(
       fetchChats({
         page: localCurrentPage,
-        limit: 10,
+        limit: 20,
         search: searchTerm,
       })
     );
@@ -63,8 +51,8 @@ const ChatsPage: React.FC = () => {
     setLocalCurrentPage(page);
   };
 
-  const handleChatClick = (chatId: string) => {
-    navigate(`/chat-details/${chatId}`);
+  const handleChatClick = (chat: any) => {
+    navigate(`/chat-history/${chat._id}`);
   };
 
   if (isLoading) {
@@ -88,8 +76,10 @@ const ChatsPage: React.FC = () => {
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Chats</h1>
-            <p className="text-gray-600">Manage all chat conversations</p>
+            <h1 className="text-2xl font-bold text-gray-900">Messages</h1>
+            <p className="text-gray-600">
+              Click on any chat to view the complete conversation
+            </p>
           </div>
           <button
             onClick={handleRefresh}
@@ -109,17 +99,17 @@ const ChatsPage: React.FC = () => {
       <div className="bg-white rounded-lg shadow-sm border border-gray-200">
         <div className="p-4 border-b border-gray-200">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">Chats List</h2>
+            <h2 className="text-lg font-semibold text-gray-900">All Chats</h2>
             <div className="flex items-center space-x-4">
               <div className="relative">
                 <input
                   type="text"
-                  placeholder="Search by name..."
+                  placeholder="Search in chat names..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
-                <MessageCircle className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+                <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
               </div>
             </div>
           </div>
@@ -133,16 +123,16 @@ const ChatsPage: React.FC = () => {
                   #
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Name
+                  Participants
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Type
+                  Chat Type
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Last Message
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Last Message At
+                  Last Active
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Action
@@ -150,13 +140,13 @@ const ChatsPage: React.FC = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {chats.map((chat: Chat, index: number) => (
+              {chats.map((chat: any, index: number) => (
                 <tr
                   key={chat._id}
                   className={`${
                     index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                  } hover:bg-gray-100 cursor-pointer transition-colors`}
-                  onClick={() => handleChatClick(chat._id)}
+                  } hover:bg-blue-50 transition-colors cursor-pointer`}
+                  onClick={() => handleChatClick(chat)}
                 >
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {index + 1}
@@ -165,45 +155,50 @@ const ChatsPage: React.FC = () => {
                     <div className="flex items-center">
                       <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center mr-3">
                         <span className="text-sm font-medium text-gray-700">
-                          {chat.name.charAt(0).toUpperCase()}
+                          {chat.participants[0]?.fullName
+                            .charAt(0)
+                            .toUpperCase() || "C"}
                         </span>
                       </div>
-                      <span className="text-sm font-medium text-gray-900">
-                        {chat.name}
-                      </span>
+                      <div>
+                        <div className="text-sm font-medium text-gray-900">
+                          {chat.participants
+                            .map((p: any) => p.fullName)
+                            .join(", ")}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {chat.participants
+                            .map((p: any) => p.email)
+                            .join(", ")}
+                        </div>
+                      </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                      {chat.isGroupChat ? "Group" : "Direct"}
+                      {chat.isGroupChat ? "Group Chat" : "Direct Chat"}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
-                    {chat.lastMessage ? (
-                      <div>
-                        <span className="font-medium">
-                          {chat.lastMessage.sender.fullName}:
-                        </span>{" "}
-                        {chat.lastMessage.content}
-                      </div>
-                    ) : (
-                      "No messages yet"
-                    )}
+                  <td className="px-6 py-4 text-sm text-gray-500 max-w-md">
+                    <div className="truncate">
+                      {chat.lastMessage
+                        ? chat.lastMessage.content
+                        : "No messages yet"}
+                    </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {chat.lastMessage
-                      ? new Date(chat.lastMessage.createdAt).toLocaleString()
-                      : new Date(chat.createdAt).toLocaleString()}
+                    {new Date(chat.lastActiveAt).toLocaleString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <button
-                      className="btn-primary text-xs"
+                      className="inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleChatClick(chat._id);
+                        handleChatClick(chat);
                       }}
                     >
-                      CHAT
+                      <MessageCircle className="h-3 w-3 mr-1" />
+                      View Chat
                     </button>
                   </td>
                 </tr>
@@ -217,8 +212,8 @@ const ChatsPage: React.FC = () => {
           <div className="px-6 py-4 border-t border-gray-200">
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-700">
-                Showing {(localCurrentPage - 1) * 10 + 1} to{" "}
-                {Math.min(localCurrentPage * 10, totalChats)} of {totalChats}{" "}
+                Showing {(localCurrentPage - 1) * 20 + 1} to{" "}
+                {Math.min(localCurrentPage * 20, totalChats)} of {totalChats}{" "}
                 chats
               </div>
               <div className="flex items-center space-x-2">
@@ -263,4 +258,4 @@ const ChatsPage: React.FC = () => {
   );
 };
 
-export default ChatsPage;
+export default MessagesPage;
