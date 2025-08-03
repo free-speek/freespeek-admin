@@ -37,7 +37,7 @@ const EnvironmentSwitcher: React.FC = () => {
           </div>
           <div className="mt-3 pt-2 border-t border-gray-200">
             <div className="text-xs text-gray-500">
-              Production: https://api.freespeek.net/api
+              Production: https://api.freespeek.net
               <br />
               Development: http://localhost:5001/api
             </div>
