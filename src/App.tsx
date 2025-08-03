@@ -16,6 +16,7 @@ import ChatDetailsPage from "./pages/ChatDetailsPage";
 import ChatsPage from "./pages/ChatsPage";
 import MessagesPage from "./pages/MessagesPage";
 import ChatHistoryPage from "./pages/ChatHistoryPage";
+import EnvironmentSwitcher from "./components/EnvironmentSwitcher";
 import { AuthProvider } from "./contexts/AuthContext";
 import { store } from "./store";
 
@@ -119,6 +120,7 @@ const App: React.FC = () => {
             </Route>
           </Routes>
         </Router>
+        <EnvironmentSwitcher />
       </AuthProvider>
     </Provider>
   );

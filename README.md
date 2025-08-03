@@ -85,6 +85,41 @@ A modern React TypeScript admin dashboard for managing the Freespeek platform.
 5. **Open your browser**
    Navigate to `http://localhost:3000`
 
+## 🌍 Environment Configuration
+
+The application supports multiple environments:
+
+### Development (Default)
+
+- **API URL**: `http://localhost:5001/api`
+- **Environment**: `development`
+- **Usage**: Local development and testing
+
+### Production
+
+- **API URL**: `https://api.freespeek.net/api`
+- **Environment**: `production`
+- **Usage**: Live production deployment
+
+### Environment Detection
+
+The app automatically detects the environment:
+
+- **Development**: Uses localhost API
+- **Production**: Uses production API
+- **Environment Switcher**: Shows current environment in development mode
+
+### Environment Variables
+
+```bash
+# Development
+REACT_APP_API_URL=http://localhost:5001/api
+REACT_APP_ADMIN_SECRET=freepeek08072024
+
+# Production (automatically set)
+NODE_ENV=production
+```
+
 ## 🔧 Available Scripts
 
 - `npm start` - Start development server
@@ -97,7 +132,10 @@ A modern React TypeScript admin dashboard for managing the Freespeek platform.
 ```
 src/
 ├── components/          # Reusable components
-│   └── Loader.tsx     # Loading spinner component
+│   ├── Loader.tsx     # Loading spinner component
+│   └── EnvironmentSwitcher.tsx # Environment indicator
+├── config/             # Configuration files
+│   └── environment.ts  # Environment configuration
 ├── contexts/           # React contexts
 │   └── AuthContext.tsx # Authentication context
 ├── layouts/            # Layout components
@@ -108,7 +146,8 @@ src/
 │   ├── ChatsPage.tsx
 │   ├── SupportChatsPage.tsx
 │   ├── LoginPage.tsx
-│   └── ChatDetailsPage.tsx
+│   ├── MessagesPage.tsx
+│   └── ChatHistoryPage.tsx
 ├── services/           # API services
 │   └── api.ts         # API client
 ├── store/              # Redux store
@@ -119,6 +158,8 @@ src/
 │       ├── dashboardSlice.ts
 │       ├── usersSlice.ts
 │       ├── chatsSlice.ts
+│       ├── messagesSlice.ts
+│       ├── chatHistorySlice.ts
 │       └── supportChatsSlice.ts
 ├── types/              # TypeScript type definitions
 │   └── index.ts
@@ -147,7 +188,9 @@ The admin panel integrates with the Freespeek backend API:
 ### Chat Endpoints
 
 - `GET /api/admin/chats` - Get paginated chats
-- `GET /api/admin/support-chats` - Get support chats
+- `GET /api/admin/chats/:chatId/messages` - Get chat history
+- `GET /api/admin/messages` - Get all messages
+- `GET /api/admin/messages-count` - Get message count
 
 ## 🎨 UI Components
 
@@ -195,8 +238,22 @@ npm run build
 
 Set the following environment variables for production:
 
-- `REACT_APP_API_URL`: Your production API URL
+- `NODE_ENV`: Set to `production` for production deployment
+- `REACT_APP_API_URL`: Your production API URL (auto-detected)
 - `REACT_APP_ADMIN_SECRET`: Your admin secret key
+
+### Build Commands
+
+```bash
+# Development
+npm start
+
+# Production build
+npm run build
+
+# Serve production build
+npx serve -s build
+```
 
 ## 🤝 Contributing
 
@@ -223,3 +280,4 @@ For support and questions:
 - **v1.0.0** - Initial release with core admin features
 - **v1.1.0** - Added pagination and search functionality
 - **v1.2.0** - Enhanced UI with loading states and error handling
+- **v1.3.0** - Added environment configuration and production support
