@@ -26,17 +26,12 @@ interface User {
 
 const FreespeekUsersPage: React.FC = () => {
   const dispatch = useAppDispatch();
-  const {
-    users,
-    isLoading,
-    error,
-    totalPages,
-    currentPage: reduxCurrentPage,
-    totalUsers,
-  } = useAppSelector((state: any) => state.users);
+  const { users, isLoading, error, totalPages, totalUsers } = useAppSelector(
+    (state: any) => state.users
+  );
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [searchTerm] = useState("");
+  const [statusFilter] = useState("all");
   const [localCurrentPage, setLocalCurrentPage] = useState(1);
   const [isRefreshing, setIsRefreshing] = useState(false);
 

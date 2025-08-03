@@ -1,3 +1,4 @@
+/* eslint-disable no-empty-pattern */
 import React, { useState } from "react";
 import {
   Settings,
@@ -138,7 +139,7 @@ const SupportChatsPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [localCurrentPage, setLocalCurrentPage] = useState(1);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [chats, setChats] = useState<SupportChat[]>(mockSupportChats);
+  const [] = useState<SupportChat[]>(mockSupportChats);
 
   // Simulate pagination with mock data
   const itemsPerPage = 10;

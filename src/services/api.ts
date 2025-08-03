@@ -164,18 +164,58 @@ class ApiService {
     });
   }
 
-  // Chats endpoints
-  async getChats(page = 1, limit = 10, search = "") {
+  // Support chats endpoints
+  async getSupportChats(page = 1, limit = 10) {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+    });
+    return this.request(`/support-chats?${params}`);
+  }
+
+  // Messages endpoints (Admin)
+  async getMessagesCount() {
+    return this.request("/admin/messages-count");
+  }
+
+  async getMessages(page = 1, limit = 20, search = "", chatId = "") {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+      ...(search && { search }),
+      ...(chatId && { chatId }),
+    });
+    return this.request(`/admin/messages?${params.toString()}`);
+  }
+
+  async getMessageById(messageId: string) {
+    return this.request(`/admin/messages/${messageId}`);
+  }
+
+  // Chat History endpoints (Admin)
+  async getChatsCount() {
+    return this.request("/admin/chats-count");
+  }
+
+  async getChats(page = 1, limit = 20, search = "") {
     const params = new URLSearchParams({
       page: page.toString(),
       limit: limit.toString(),
       ...(search && { search }),
     });
-    return this.request(`/chats?${params}`);
+    return this.request(`/admin/chats?${params.toString()}`);
   }
 
   async getChatById(id: string) {
-    return this.request(`/chats/${id}`);
+    return this.request(`/admin/chats/${id}`);
+  }
+
+  async getChatHistory(chatId: string, page = 1, limit = 50) {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+    });
+    return this.request(`/admin/chats/${chatId}/messages?${params.toString()}`);
   }
 
   async getChatMessages(chatId: string) {
@@ -187,15 +227,6 @@ class ApiService {
       method: "POST",
       body: JSON.stringify({ message }),
     });
-  }
-
-  // Support chats endpoints
-  async getSupportChats(page = 1, limit = 10) {
-    const params = new URLSearchParams({
-      page: page.toString(),
-      limit: limit.toString(),
-    });
-    return this.request(`/support-chats?${params}`);
   }
 
   // Health check

@@ -1,51 +1,64 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import apiService from "../../services/api";
 
+interface ChatParticipant {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  fullName: string;
+  email: string;
+  profilePicture?: string;
+}
+
+interface ChatLastMessage {
+  _id: string;
+  content: string;
+  createdAt: string;
+}
+
 interface Chat {
-  id: string;
-  name: string;
-  message: string;
-  lastMessageAt: string;
-  status: string;
-  profilePicture: string;
+  _id: string;
+  isGroupChat: boolean;
+  participants: ChatParticipant[];
+  lastMessage?: ChatLastMessage;
+  lastActiveAt: string;
+  createdAt: string;
 }
 
-interface Message {
-  id: string;
-  text: string;
-  sender: "user" | "admin";
-  timestamp: string;
-}
-
-interface ChatUser {
-  id: string;
-  name: string;
-  profilePicture: string;
-  status: string;
+interface ChatsResponse {
+  success: boolean;
+  data: {
+    chats: Chat[];
+    totalChats: number;
+    pagination: {
+      currentPage: number;
+      totalPages: number;
+      hasNextPage: boolean;
+      hasPrevPage: boolean;
+    };
+  };
 }
 
 interface ChatsState {
   chats: Chat[];
-  currentChat: {
-    user: ChatUser | null;
-    messages: Message[];
-  };
   isLoading: boolean;
   error: string | null;
   totalPages: number;
   currentPage: number;
+  totalChats: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
 }
 
 const initialState: ChatsState = {
   chats: [],
-  currentChat: {
-    user: null,
-    messages: [],
-  },
   isLoading: false,
   error: null,
   totalPages: 1,
   currentPage: 1,
+  totalChats: 0,
+  hasNextPage: false,
+  hasPrevPage: false,
 };
 
 export const fetchChats = createAsyncThunk(
@@ -53,14 +66,14 @@ export const fetchChats = createAsyncThunk(
   async (
     {
       page = 1,
-      limit = 10,
+      limit = 20,
       search = "",
     }: { page?: number; limit?: number; search?: string },
     { rejectWithValue }
   ) => {
     try {
       const response = await apiService.getChats(page, limit, search);
-      return response;
+      return response as ChatsResponse;
     } catch (error: any) {
       return rejectWithValue(error.message || "Failed to fetch chats");
     }
@@ -79,33 +92,6 @@ export const fetchChatById = createAsyncThunk(
   }
 );
 
-export const fetchChatMessages = createAsyncThunk(
-  "chats/fetchChatMessages",
-  async (chatId: string, { rejectWithValue }) => {
-    try {
-      const response = await apiService.getChatMessages(chatId);
-      return { chatId, messages: response };
-    } catch (error: any) {
-      return rejectWithValue(error.message || "Failed to fetch messages");
-    }
-  }
-);
-
-export const sendMessage = createAsyncThunk(
-  "chats/sendMessage",
-  async (
-    { chatId, message }: { chatId: string; message: string },
-    { rejectWithValue }
-  ) => {
-    try {
-      const response = await apiService.sendMessage(chatId, message);
-      return response;
-    } catch (error: any) {
-      return rejectWithValue(error.message || "Failed to send message");
-    }
-  }
-);
-
 const chatsSlice = createSlice({
   name: "chats",
   initialState,
@@ -113,14 +99,9 @@ const chatsSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
-    clearCurrentChat: (state) => {
-      state.currentChat = {
-        user: null,
-        messages: [],
-      };
-    },
-    addMessage: (state, action: PayloadAction<Message>) => {
-      state.currentChat.messages.push(action.payload);
+    clearChats: (state) => {
+      state.chats = [];
+      state.error = null;
     },
   },
   extraReducers: (builder) => {
@@ -132,9 +113,12 @@ const chatsSlice = createSlice({
       })
       .addCase(fetchChats.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.chats = (action.payload as any).chats || [];
-        state.totalPages = (action.payload as any).totalPages || 1;
-        state.currentPage = (action.payload as any).currentPage || 1;
+        state.chats = action.payload.data.chats;
+        state.totalChats = action.payload.data.totalChats;
+        state.currentPage = action.payload.data.pagination.currentPage;
+        state.totalPages = action.payload.data.pagination.totalPages;
+        state.hasNextPage = action.payload.data.pagination.hasNextPage;
+        state.hasPrevPage = action.payload.data.pagination.hasPrevPage;
         state.error = null;
       })
       .addCase(fetchChats.rejected, (state, action) => {
@@ -148,47 +132,14 @@ const chatsSlice = createSlice({
       })
       .addCase(fetchChatById.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.currentChat.user = action.payload as any;
         state.error = null;
       })
       .addCase(fetchChatById.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload as string;
-      })
-      // Fetch chat messages
-      .addCase(fetchChatMessages.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
-      .addCase(fetchChatMessages.fulfilled, (state, action) => {
-        state.isLoading = false;
-        const { chatId, messages } = action.payload as any;
-        if (state.currentChat.user?.id === chatId) {
-          state.currentChat.messages = messages;
-        }
-        state.error = null;
-      })
-      .addCase(fetchChatMessages.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload as string;
-      })
-      // Send message
-      .addCase(sendMessage.pending, (state) => {
-        state.isLoading = true;
-        state.error = null;
-      })
-      .addCase(sendMessage.fulfilled, (state, action) => {
-        state.isLoading = false;
-        const newMessage = action.payload as any;
-        state.currentChat.messages.push(newMessage);
-        state.error = null;
-      })
-      .addCase(sendMessage.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       });
   },
 });
 
-export const { clearError, clearCurrentChat, addMessage } = chatsSlice.actions;
+export const { clearError, clearChats } = chatsSlice.actions;
 export default chatsSlice.reducer;
