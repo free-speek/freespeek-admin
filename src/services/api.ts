@@ -1,6 +1,10 @@
-const API_BASE_URL =
-  process.env.REACT_APP_API_URL || "http://localhost:5001/api";
-const ADMIN_SECRET = process.env.REACT_APP_ADMIN_SECRET || "freepeek08072024";
+import { config } from "../config/environment";
+
+const API_BASE_URL = config.apiUrl;
+const ADMIN_SECRET = config.adminSecret;
+
+console.log(`🚀 API Environment: ${config.environment}`);
+console.log(`🌐 API Base URL: ${API_BASE_URL}`);
 
 class ApiService {
   private baseURL: string;
