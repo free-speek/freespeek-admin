@@ -6,123 +6,73 @@ import {
   Navigate,
 } from "react-router-dom";
 import { Provider } from "react-redux";
+import { store } from "./store";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import AdminLayout from "./layouts/AdminLayout";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import FreespeekUsersPage from "./pages/FreespeekUsersPage";
-import SupportChatsPage from "./pages/SupportChatsPage";
-import UserProfilePage from "./pages/UserProfilePage";
-import ChatDetailsPage from "./pages/ChatDetailsPage";
-import ChatsPage from "./pages/ChatsPage";
 import MessagesPage from "./pages/MessagesPage";
+import SupportChatsPage from "./pages/SupportChatsPage";
 import ChatHistoryPage from "./pages/ChatHistoryPage";
-import EnvironmentSwitcher from "./components/EnvironmentSwitcher";
-import { AuthProvider } from "./contexts/AuthContext";
-import { store } from "./store";
+import ChatDetailsPage from "./pages/ChatDetailsPage";
+import UserProfilePage from "./pages/UserProfilePage";
+import Loader from "./components/Loader";
+
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <Loader size="lg" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
+};
+
+const AppContent: React.FC = () => {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/login" element={<LoginPage />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <AdminLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="/dashboard" replace />} />
+          <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="freespeek-users" element={<FreespeekUsersPage />} />
+          <Route path="messages" element={<MessagesPage />} />
+          <Route path="support-chats" element={<SupportChatsPage />} />
+          <Route path="chat-history/:chatId" element={<ChatHistoryPage />} />
+          <Route path="chat-details/:chatId" element={<ChatDetailsPage />} />
+          <Route path="user-profile/:userId" element={<UserProfilePage />} />
+        </Route>
+      </Routes>
+    </Router>
+  );
+};
 
 const App: React.FC = () => {
   return (
-    <Provider store={store}>
-      <AuthProvider>
-        <Router>
-          <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/" element={<AdminLayout />}>
-              <Route index element={<Navigate to="/dashboard" replace />} />
-              <Route path="dashboard" element={<DashboardPage />} />
-              <Route path="freespeek-users" element={<FreespeekUsersPage />} />
-              <Route path="support-chats" element={<SupportChatsPage />} />
-              <Route path="user-profile/:id" element={<UserProfilePage />} />
-              <Route
-                path="chat-details/:chatId"
-                element={<ChatDetailsPage />}
-              />
-              <Route path="chats" element={<ChatsPage />} />
-              <Route path="messages" element={<MessagesPage />} />
-              <Route
-                path="chat-history/:chatId"
-                element={<ChatHistoryPage />}
-              />
-              <Route
-                path="statistics"
-                element={
-                  <div className="p-6">
-                    <h1 className="text-2xl font-bold">Statistics</h1>
-                  </div>
-                }
-              />
-              <Route
-                path="interactions-dashboard"
-                element={
-                  <div className="p-6">
-                    <h1 className="text-2xl font-bold">
-                      Interactions Dashboard
-                    </h1>
-                  </div>
-                }
-              />
-              <Route
-                path="dau-mau"
-                element={
-                  <div className="p-6">
-                    <h1 className="text-2xl font-bold">DAU/MAU</h1>
-                  </div>
-                }
-              />
-              <Route
-                path="create-test-user"
-                element={
-                  <div className="p-6">
-                    <h1 className="text-2xl font-bold">Create Test User</h1>
-                  </div>
-                }
-              />
-              <Route
-                path="interactions"
-                element={
-                  <div className="p-6">
-                    <h1 className="text-2xl font-bold">Interactions</h1>
-                  </div>
-                }
-              />
-              <Route
-                path="campaign"
-                element={
-                  <div className="p-6">
-                    <h1 className="text-2xl font-bold">Campaign</h1>
-                  </div>
-                }
-              />
-              <Route
-                path="create-campaign"
-                element={
-                  <div className="p-6">
-                    <h1 className="text-2xl font-bold">Create Campaign</h1>
-                  </div>
-                }
-              />
-              <Route
-                path="language"
-                element={
-                  <div className="p-6">
-                    <h1 className="text-2xl font-bold">Language</h1>
-                  </div>
-                }
-              />
-              <Route
-                path="hotspots"
-                element={
-                  <div className="p-6">
-                    <h1 className="text-2xl font-bold">Hotspots</h1>
-                  </div>
-                }
-              />
-            </Route>
-          </Routes>
-        </Router>
-        <EnvironmentSwitcher />
-      </AuthProvider>
-    </Provider>
+    <AuthProvider>
+      <Provider store={store}>
+        <AppContent />
+      </Provider>
+    </AuthProvider>
   );
 };
 

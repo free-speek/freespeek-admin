@@ -18,9 +18,9 @@ import {
   Eye,
   Vote,
   Calendar,
-  MessageSquare,
   RefreshCw,
   MessageCircle,
+  FileText,
 } from "lucide-react";
 import Loader from "../components/Loader";
 
@@ -33,7 +33,7 @@ const StatCard: React.FC<{
   onClick?: () => void;
 }> = ({ title, value, icon: Icon, iconColor, subtitle, onClick }) => (
   <div
-    className={`card h-32 ${
+    className={`card h-auto min-h-[8rem] ${
       onClick
         ? "cursor-pointer hover:shadow-lg transition-shadow duration-200"
         : ""
@@ -43,11 +43,15 @@ const StatCard: React.FC<{
     <div className="flex items-center justify-between h-full">
       <div className="flex-1">
         <p className="text-sm font-medium text-gray-600 mb-1">{title}</p>
-        <p className="text-3xl font-bold text-gray-900 mb-1">{value}</p>
-        {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
+        <p className="text-2xl lg:text-3xl font-bold text-gray-900 mb-1">
+          {value}
+        </p>
+        {subtitle && (
+          <p className="text-xs lg:text-sm text-gray-500">{subtitle}</p>
+        )}
       </div>
-      <div className={`p-4 rounded-lg ${iconColor} ml-4`}>
-        <Icon className="h-8 w-8 text-white" />
+      <div className={`p-3 lg:p-4 rounded-lg ${iconColor} ml-4`}>
+        <Icon className="h-6 w-6 lg:h-8 lg:w-8 text-white" />
       </div>
     </div>
   </div>
@@ -118,10 +122,10 @@ const DashboardPage: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 lg:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
         <div className="flex items-center space-x-4">
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-xl lg:text-2xl font-bold text-gray-900">
             General Dashboard
           </h1>
           <button
@@ -141,8 +145,17 @@ const DashboardPage: React.FC = () => {
 
       {/* Users Section */}
       <div className="space-y-4">
-        <h2 className="text-xl font-semibold text-gray-900">Users</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <h2 className="text-lg lg:text-xl font-semibold text-gray-900">
+          Users
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-8">
+          <StatCard
+            title="Live Users"
+            value={liveUsersCount}
+            icon={Users}
+            iconColor="bg-purple-500"
+            subtitle="Users currently online via mobile app"
+          />
           <StatCard
             title="Total Users"
             value={
@@ -161,14 +174,6 @@ const DashboardPage: React.FC = () => {
           />
 
           <StatCard
-            title="Live Users"
-            value={liveUsersCount}
-            icon={Users}
-            iconColor="bg-purple-500"
-            subtitle="Users currently online via mobile app"
-          />
-
-          <StatCard
             title="Deleted Users"
             value={stats?.deletedUserCount || 0}
             icon={Archive}
@@ -179,8 +184,10 @@ const DashboardPage: React.FC = () => {
 
       {/* Messages Section */}
       <div className="space-y-4">
-        <h2 className="text-xl font-semibold text-gray-900">Messages</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <h2 className="text-lg lg:text-xl font-semibold text-gray-900">
+          Messages
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-8">
           <StatCard
             title="Total Messages"
             value={totalMessages}
@@ -192,22 +199,26 @@ const DashboardPage: React.FC = () => {
 
       {/* Posts Section */}
       <div className="space-y-4">
-        <h2 className="text-xl font-semibold text-gray-900">Posts</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <h2 className="text-lg lg:text-xl font-semibold text-gray-900">
+          Posts
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-8">
           <StatCard
             title="Total Posts"
             value={
               (stats?.activePostCount || 0) + (stats?.deletedPostCount || 0)
             }
-            icon={MessageSquare}
-            iconColor="bg-blue-500"
+            icon={FileText}
+            iconColor="bg-orange-500"
           />
+
           <StatCard
             title="Active Posts"
             value={stats?.activePostCount || 0}
-            icon={MessageSquare}
+            icon={FileText}
             iconColor="bg-green-500"
           />
+
           <StatCard
             title="Deleted Posts"
             value={stats?.deletedPostCount || 0}
