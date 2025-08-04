@@ -11,7 +11,7 @@ const getEnvironmentConfig = (): EnvironmentConfig => {
   if (isProduction) {
     return {
       apiUrl: "https://api.freespeek.net/api",
-      adminSecret: "freepeek08072024",
+      adminSecret: "freespeek08072024",
       environment: "production",
     };
   }
@@ -19,7 +19,7 @@ const getEnvironmentConfig = (): EnvironmentConfig => {
   if (isDevelopment) {
     return {
       apiUrl: process.env.REACT_APP_API_URL || "http://localhost:5001/api",
-      adminSecret: process.env.REACT_APP_ADMIN_SECRET || "freepeek08072024",
+      adminSecret: process.env.REACT_APP_ADMIN_SECRET || "freespeek08072024",
       environment: "development",
     };
   }
@@ -27,7 +27,7 @@ const getEnvironmentConfig = (): EnvironmentConfig => {
   // Default fallback
   return {
     apiUrl: "http://localhost:5001/api",
-    adminSecret: "freepeek08072024",
+    adminSecret: "freespeek08072024",
     environment: "local",
   };
 };

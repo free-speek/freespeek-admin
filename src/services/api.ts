@@ -8,9 +8,18 @@ console.log(`🌐 API Base URL: ${API_BASE_URL}`);
 
 class ApiService {
   private baseURL: string;
+  private authToken: string | null = null;
 
   constructor() {
     this.baseURL = API_BASE_URL;
+  }
+
+  setAuthToken(token: string) {
+    this.authToken = token;
+  }
+
+  clearAuthToken() {
+    this.authToken = null;
   }
 
   private async request<T>(
@@ -27,29 +36,52 @@ class ApiService {
       ...options,
     };
 
-    // Add admin authorization header
-    config.headers = {
-      ...config.headers,
-      Authorization: `Bearer ${ADMIN_SECRET}`,
-    };
+    // Add authorization header - JWT token takes precedence over admin secret
+    if (this.authToken) {
+      config.headers = {
+        ...config.headers,
+        Authorization: `Bearer ${this.authToken}`,
+      };
+    } else {
+      // Fallback to admin secret for non-authenticated requests
+      config.headers = {
+        ...config.headers,
+        Authorization: `Bearer ${ADMIN_SECRET}`,
+      };
+    }
 
     try {
       const response = await fetch(url, config);
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      if (response.status === 401 || response.status === 403) {
+        this.clearAuthToken();
+        localStorage.removeItem("authToken");
+        throw new Error("Authentication failed");
       }
 
-      return await response.json();
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Extract error message from response
+        const errorMessage =
+          data.message ||
+          data.error ||
+          `HTTP error! status: ${response.status}`;
+        throw new Error(errorMessage);
+      }
+
+      return data;
     } catch (error) {
       console.error("API request failed:", error);
+      console.error("Request URL:", url);
+      console.error("Request config:", config);
       throw error;
     }
   }
 
   // Auth endpoints
   async login(email: string, password: string) {
-    return this.request("/auth/login", {
+    return this.request("/admin/login", {
       method: "POST",
       body: JSON.stringify({ email, password }),
     });
@@ -59,6 +91,10 @@ class ApiService {
     return this.request("/auth/logout", {
       method: "POST",
     });
+  }
+
+  async getCurrentUser() {
+    return this.request("/auth/me");
   }
 
   // Dashboard stats - Admin APIs
