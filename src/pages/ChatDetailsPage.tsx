@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { fetchMessages } from "../store/slices/messagesSlice";
 import { Send, ArrowLeft } from "lucide-react";
 import Loader from "../components/Loader";
+import { usePageTitle } from "../hooks/usePageTitle";
 
 interface Message {
   _id: string;
@@ -35,6 +36,8 @@ const ChatDetailsPage: React.FC = () => {
   );
   const [newMessage, setNewMessage] = useState("");
 
+  usePageTitle("Chat Details");
+
   useEffect(() => {
     if (chatId) {
       dispatch(
@@ -50,7 +53,6 @@ const ChatDetailsPage: React.FC = () => {
   const handleSendMessage = () => {
     if (newMessage.trim()) {
       // TODO: Implement send message functionality
-      console.log("Sending message:", newMessage);
       setNewMessage("");
     }
   };

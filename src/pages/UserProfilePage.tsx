@@ -1,4 +1,5 @@
 import React from "react";
+import { usePageTitle } from "../hooks/usePageTitle";
 import { User } from "../types";
 
 const mockUser: User = {
@@ -55,6 +56,7 @@ const mockUser: User = {
 };
 
 const UserProfilePage: React.FC = () => {
+  usePageTitle("User Profile");
   return (
     <div className="space-y-4 lg:space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">

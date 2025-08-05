@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from "react";
 import { Outlet, useLocation, Link, useNavigate } from "react-router-dom";
 import {
@@ -16,6 +17,7 @@ import {
   MessageSquare,
   Menu,
   X,
+  FileText as FileTextIcon,
 } from "lucide-react";
 import { NavigationItem } from "../types";
 import logoText from "../assets/logoText.png";
@@ -60,6 +62,7 @@ const getIconComponent = (iconName: string) => {
     Globe,
     MapPin,
     MessageSquare,
+    FileTextIcon,
   };
   return iconMap[iconName] || LayoutDashboard;
 };

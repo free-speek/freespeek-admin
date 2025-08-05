@@ -10,6 +10,7 @@ import {
   MessageCircle,
 } from "lucide-react";
 import Loader from "../components/Loader";
+import { usePageTitle } from "../hooks/usePageTitle";
 
 const MessagesPage: React.FC = () => {
   const navigate = useNavigate();
@@ -21,6 +22,8 @@ const MessagesPage: React.FC = () => {
   const [localCurrentPage, setLocalCurrentPage] = useState(1);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
+  usePageTitle("Messages");
+
   useEffect(() => {
     dispatch(
       fetchChats({
@@ -30,10 +33,6 @@ const MessagesPage: React.FC = () => {
       })
     );
   }, [dispatch, searchTerm, localCurrentPage]);
-
-  console.log("MessagesPage - chats:", chats);
-  console.log("MessagesPage - isLoading:", isLoading);
-  console.log("MessagesPage - error:", error);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);

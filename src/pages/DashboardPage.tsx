@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { fetchDashboardStats } from "../store/slices/dashboardSlice";
@@ -23,6 +23,7 @@ import {
   FileText,
 } from "lucide-react";
 import Loader from "../components/Loader";
+import { usePageTitle } from "../hooks/usePageTitle";
 
 const StatCard: React.FC<{
   title: string;
@@ -67,8 +68,7 @@ const DashboardPage: React.FC = () => {
   const [liveUsersCount, setLiveUsersCount] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  console.log("Dashboard stats:", stats);
-  console.log("Online users count:", stats?.onlineUsersCount);
+  usePageTitle("Dashboard");
 
   useEffect(() => {
     dispatch(fetchDashboardStats());

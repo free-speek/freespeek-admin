@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import Loader from "../components/Loader";
+import { usePageTitle } from "../hooks/usePageTitle";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("admin@freespeek.com");
@@ -12,6 +13,8 @@ const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { login, isAuthenticated, isLoading: authLoading } = useAuth();
+
+  usePageTitle("Login");
 
   useEffect(() => {
     if (isAuthenticated) {

@@ -3,9 +3,6 @@ import { config } from "../config/environment";
 const API_BASE_URL = config.apiUrl;
 const ADMIN_SECRET = config.adminSecret;
 
-console.log(`🚀 API Environment: ${config.environment}`);
-console.log(`🌐 API Base URL: ${API_BASE_URL}`);
-
 class ApiService {
   private baseURL: string;
   private authToken: string | null = null;
@@ -94,7 +91,7 @@ class ApiService {
   }
 
   async getCurrentUser() {
-    return this.request("/auth/me");
+    return this.request("/admin/me");
   }
 
   // Dashboard stats - Admin APIs
@@ -205,12 +202,47 @@ class ApiService {
   }
 
   // Support chats endpoints
-  async getSupportChats(page = 1, limit = 10) {
+  async getSupportChats(page = 1, limit = 10, status = "all", search = "") {
     const params = new URLSearchParams({
       page: page.toString(),
       limit: limit.toString(),
+      ...(status !== "all" && { status }),
+      ...(search && { search }),
     });
-    return this.request(`/support-chats?${params}`);
+    return this.request(`/admin/support-chats?${params.toString()}`);
+  }
+
+  async getSupportChatById(chatId: string) {
+    return this.request(`/admin/support-chats/${chatId}`);
+  }
+
+  async sendSupportChatReply(chatId: string, message: string) {
+    return this.request(`/admin/support-chats/${chatId}/reply`, {
+      method: "POST",
+      body: JSON.stringify({ message }),
+    });
+  }
+
+  async sendSupportChatEmailReply(chatId: string, message: string) {
+    return this.request(`/admin/support-chats/${chatId}/email-reply`, {
+      method: "POST",
+      body: JSON.stringify({ message }),
+    });
+  }
+
+  async updateSupportChatStatus(chatId: string, status: string) {
+    return this.request(`/admin/support-chats/${chatId}/status`, {
+      method: "PUT",
+      body: JSON.stringify({ status }),
+    });
+  }
+
+  async getSupportChatsCount() {
+    return this.request("/admin/support-chats-count");
+  }
+
+  async getSupportChatsStats() {
+    return this.request("/admin/support-chats-stats");
   }
 
   // Messages endpoints (Admin)

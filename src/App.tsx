@@ -14,6 +14,7 @@ import DashboardPage from "./pages/DashboardPage";
 import FreespeekUsersPage from "./pages/FreespeekUsersPage";
 import MessagesPage from "./pages/MessagesPage";
 import SupportChatsPage from "./pages/SupportChatsPage";
+import SupportChatDetailsPage from "./pages/SupportChatDetailsPage";
 import ChatHistoryPage from "./pages/ChatHistoryPage";
 import ChatDetailsPage from "./pages/ChatDetailsPage";
 import UserProfilePage from "./pages/UserProfilePage";
@@ -57,6 +58,10 @@ const AppContent: React.FC = () => {
           <Route path="freespeek-users" element={<FreespeekUsersPage />} />
           <Route path="messages" element={<MessagesPage />} />
           <Route path="support-chats" element={<SupportChatsPage />} />
+          <Route
+            path="support-chat-details/:chatId"
+            element={<SupportChatDetailsPage />}
+          />
           <Route path="chat-history/:chatId" element={<ChatHistoryPage />} />
           <Route path="chat-details/:chatId" element={<ChatDetailsPage />} />
           <Route path="user-profile/:userId" element={<UserProfilePage />} />

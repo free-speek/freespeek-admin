@@ -7,6 +7,7 @@ import {
 } from "../store/slices/chatHistorySlice";
 import { ArrowLeft } from "lucide-react";
 import Loader from "../components/Loader";
+import { usePageTitle } from "../hooks/usePageTitle";
 
 const ChatHistoryPage: React.FC = () => {
   const { chatId } = useParams<{ chatId: string }>();
@@ -23,6 +24,8 @@ const ChatHistoryPage: React.FC = () => {
   } = useAppSelector((state: any) => state.chatHistory);
   //   const [newMessage, setNewMessage] = useState("");
 
+  usePageTitle("Chat History");
+
   useEffect(() => {
     if (chatId) {
       dispatch(
@@ -38,7 +41,6 @@ const ChatHistoryPage: React.FC = () => {
   //   const handleSendMessage = () => {
   //     if (newMessage.trim()) {
   //       // TODO: Implement send message functionality
-  //       console.log("Sending message:", newMessage);
   //       setNewMessage("");
   //     }
   //   };
