@@ -62,6 +62,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     localStorage.removeItem("authToken");
   };
 
+  const setUserData = (userData: User) => {
+    setUser(userData);
+    localStorage.setItem("userData", JSON.stringify(userData));
+  };
+
+  const getUserData = (): User | null => {
+    const stored = localStorage.getItem("userData");
+    return stored ? JSON.parse(stored) : null;
+  };
+
+  const removeUserData = () => {
+    localStorage.removeItem("userData");
+  };
+
   useEffect(() => {
     const checkAuth = async () => {
       const token = getToken();
@@ -71,16 +85,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           // Set the token in API service for subsequent requests
           apiService.setAuthToken(token);
 
-          // Try to get current user data
-          const userData = (await apiService.getCurrentUser()) as any;
-          setUser(userData);
+          // Try to get current user data from API
+          try {
+            const userData = (await apiService.getCurrentUser()) as any;
+            setUserData(userData);
+          } catch (apiError) {
+            // If API call fails, try to use stored user data
+            const storedUserData = getUserData();
+            if (storedUserData) {
+              setUser(storedUserData);
+            } else {
+              throw apiError;
+            }
+          }
         } catch (error) {
-          console.error("Token validation failed:", error);
+          console.error("❌ Authentication failed:", error);
           removeToken();
+          removeUserData();
           setUser(null);
         }
       } else {
         removeToken();
+        removeUserData();
         setUser(null);
       }
 
@@ -119,7 +145,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (token) {
         setToken(token);
         apiService.setAuthToken(token);
-        setUser(userData);
+        setUserData(userData);
       } else {
         throw new Error("No token received from server");
       }
@@ -143,6 +169,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.error("Logout error:", error);
     } finally {
       removeToken();
+      removeUserData();
       setUser(null);
       apiService.clearAuthToken();
     }

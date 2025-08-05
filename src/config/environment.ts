@@ -33,9 +33,3 @@ const getEnvironmentConfig = (): EnvironmentConfig => {
 };
 
 export const config = getEnvironmentConfig();
-
-console.log(`🚀 Environment: ${config.environment}`);
-console.log(`🌐 API URL: ${config.apiUrl}`);
-console.log(
-  `🔐 Admin Secret: ${config.adminSecret ? "Configured" : "Not configured"}`
-);

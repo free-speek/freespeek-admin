@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { fetchUsers } from "../store/slices/usersSlice";
 import { RefreshCw, ChevronLeft, ChevronRight } from "lucide-react";
 import Loader from "../components/Loader";
+import { usePageTitle } from "../hooks/usePageTitle";
 
 interface User {
   _id: string;
@@ -34,6 +35,8 @@ const FreespeekUsersPage: React.FC = () => {
   const [statusFilter] = useState("all");
   const [localCurrentPage, setLocalCurrentPage] = useState(1);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  usePageTitle("Freespeek Users");
 
   useEffect(() => {
     dispatch(
