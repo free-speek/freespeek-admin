@@ -43,9 +43,6 @@ export const fetchDashboardStats = createAsyncThunk(
         apiService.getOnlineUsersCount(),
       ]);
 
-      console.log("Dashboard stats response:", statsResponse);
-      console.log("Online users response:", onlineUsersResponse);
-
       return {
         ...(statsResponse as any),
         data: {
