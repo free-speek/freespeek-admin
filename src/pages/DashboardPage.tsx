@@ -79,6 +79,7 @@ const DashboardPage: React.FC = () => {
     const fetchLiveUsers = async () => {
       try {
         const response = await apiService.getOnlineUsersCount();
+        console.log("Live users API response:", response);
         setLiveUsersCount((response as any).count);
       } catch (error) {
         console.error("Failed to fetch live users:", error);

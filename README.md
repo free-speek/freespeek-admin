@@ -114,7 +114,7 @@ The app automatically detects the environment:
 ```bash
 # Development
 REACT_APP_API_URL=http://localhost:5001/api
-REACT_APP_ADMIN_SECRET=freepeek08072024
+REACT_APP_ADMIN_SECRET=freespeek08072024
 
 # Production (automatically set)
 NODE_ENV=production
