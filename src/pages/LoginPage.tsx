@@ -6,8 +6,8 @@ import Loader from "../components/Loader";
 import { usePageTitle } from "../hooks/usePageTitle";
 
 const LoginPage = () => {
-  const [email, setEmail] = useState("admin@freespeek.com");
-  const [password, setPassword] = useState("112233");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
