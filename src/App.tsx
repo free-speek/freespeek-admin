@@ -12,6 +12,7 @@ import AdminLayout from "./layouts/AdminLayout";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import FreespeekUsersPage from "./pages/FreespeekUsersPage";
+import LiveUsersPage from "./pages/LiveUsersPage";
 import MessagesPage from "./pages/MessagesPage";
 import SupportChatsPage from "./pages/SupportChatsPage";
 import SupportChatDetailsPage from "./pages/SupportChatDetailsPage";
@@ -56,6 +57,7 @@ const AppContent: React.FC = () => {
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="freespeek-users" element={<FreespeekUsersPage />} />
+          <Route path="live-users" element={<LiveUsersPage />} />
           <Route path="messages" element={<MessagesPage />} />
           <Route path="support-chats" element={<SupportChatsPage />} />
           <Route
