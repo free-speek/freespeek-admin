@@ -37,6 +37,12 @@ const navigationItems: NavigationItem[] = [
     path: "/freespeek-users",
   },
   {
+    id: "live-users",
+    label: "Live Users",
+    icon: "UserPlus",
+    path: "/live-users",
+  },
+  {
     id: "messages",
     label: "Messages",
     icon: "MessageSquare",
@@ -90,6 +96,7 @@ const AdminLayout: React.FC = () => {
   const getCurrentPageTitle = () => {
     if (location.pathname === "/dashboard") return "General Dashboard";
     if (location.pathname === "/freespeek-users") return "Freespeek Users";
+    if (location.pathname === "/live-users") return "Live Users";
     if (location.pathname === "/messages") return "Messages";
     if (location.pathname === "/support-chats") return "Support Chats";
     if (location.pathname.startsWith("/chat-details")) return "Chat Details";

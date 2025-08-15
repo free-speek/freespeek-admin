@@ -49,6 +49,26 @@ const FreespeekUsersPage: React.FC = () => {
     );
   }, [dispatch, searchTerm, statusFilter, localCurrentPage]);
 
+  useEffect(() => {
+    if (users.length > 0) {
+      console.log("=== USERS DATA DEBUG ===");
+      console.log("Total users received:", users.length);
+      console.log("First user object:", users[0]);
+      console.log("First user keys:", Object.keys(users[0]));
+      console.log("First user createdAt:", users[0].createdAt);
+      console.log("First user createdAt type:", typeof users[0].createdAt);
+      console.log(
+        "All users createdAt values:",
+        users.map((u: User) => ({
+          id: u._id,
+          name: u.fullName,
+          createdAt: u.createdAt,
+        }))
+      );
+      console.log("=== END DEBUG ===");
+    }
+  }, [users]);
+
   const handleRefresh = async () => {
     setIsRefreshing(true);
     await dispatch(
@@ -140,6 +160,9 @@ const FreespeekUsersPage: React.FC = () => {
                 <th className="hidden xl:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Last Login
                 </th>
+                <th className="hidden xl:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Created Date
+                </th>
                 <th className="px-1 sm:px-2 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
                 </th>
@@ -186,6 +209,11 @@ const FreespeekUsersPage: React.FC = () => {
                   </td>
                   <td className="hidden xl:table-cell px-6 py-4 text-sm text-gray-500">
                     {user.lastLogin || "-"}
+                  </td>
+                  <td className="hidden xl:table-cell px-6 py-4 text-sm text-gray-500">
+                    {user.createdAt
+                      ? new Date(user.createdAt).toLocaleDateString()
+                      : "-"}
                   </td>
                   <td className="px-1 sm:px-2 lg:px-6 py-4 whitespace-nowrap">
                     <span
