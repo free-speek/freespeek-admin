@@ -77,60 +77,25 @@ const UserProfilePage: React.FC = () => {
     (state: any) => state.users
   );
 
-  console.log("🔍 UserProfilePage: Full Redux state:", fullState);
-  console.log("🔍 UserProfilePage: Users slice state:", fullState.users);
-  console.log("🔍 UserProfilePage: Destructured values:", {
-    currentUser,
-    isLoading,
-    error,
-  });
-
   const [user, setUser] = useState<UserProfile | null>(null);
 
   usePageTitle("User Profile");
 
   useEffect(() => {
     if (userId) {
-      console.log("🔍 UserProfilePage: Fetching user with ID:", userId);
-      console.log("🔍 UserProfilePage: Current Redux state before dispatch:", {
-        currentUser: currentUser,
-        isLoading: isLoading,
-        error: error,
-      });
       dispatch(fetchUserById(userId));
     }
   }, [dispatch, userId]);
 
   useEffect(() => {
-    console.log("🔍 UserProfilePage: Redux state changed:", {
-      currentUser: currentUser,
-      isLoading: isLoading,
-      error: error,
-    });
-
     if (currentUser) {
-      console.log("🔍 UserProfilePage: Setting user state with:", currentUser);
-      console.log("🔍 UserProfilePage: currentUser type:", typeof currentUser);
-      console.log(
-        "🔍 UserProfilePage: currentUser keys:",
-        currentUser ? Object.keys(currentUser) : "null"
-      );
       setUser(currentUser);
-    } else {
-      console.log("🔍 UserProfilePage: No currentUser in Redux state");
     }
   }, [currentUser, isLoading, error]);
 
   useEffect(() => {
-    console.log("🔍 UserProfilePage: Local user state changed:", user);
     if (user) {
-      console.log("🔍 UserProfilePage: User object details:", {
-        hasId: !!user._id,
-        hasFirstName: !!user.firstName,
-        hasLastName: !!user.lastName,
-        hasEmail: !!user.email,
-        id: user._id,
-      });
+      // Removed console.log statements
     }
   }, [user]);
 
@@ -139,15 +104,15 @@ const UserProfilePage: React.FC = () => {
   };
 
   const handleSuspendUser = () => {
-    console.log("Suspend user:", user?._id);
+    // Handle suspend user
   };
 
   const handleEditUser = () => {
-    console.log("Edit user:", user?._id);
+    // Handle edit user
   };
 
   const handleDeleteUser = () => {
-    console.log("Delete user:", user?._id);
+    // Handle delete user
   };
 
   if (isLoading) {

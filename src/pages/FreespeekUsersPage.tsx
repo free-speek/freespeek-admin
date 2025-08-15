@@ -49,26 +49,6 @@ const FreespeekUsersPage: React.FC = () => {
     );
   }, [dispatch, searchTerm, statusFilter, localCurrentPage]);
 
-  useEffect(() => {
-    if (users.length > 0) {
-      console.log("=== USERS DATA DEBUG ===");
-      console.log("Total users received:", users.length);
-      console.log("First user object:", users[0]);
-      console.log("First user keys:", Object.keys(users[0]));
-      console.log("First user createdAt:", users[0].createdAt);
-      console.log("First user createdAt type:", typeof users[0].createdAt);
-      console.log(
-        "All users createdAt values:",
-        users.map((u: User) => ({
-          id: u._id,
-          name: u.fullName,
-          createdAt: u.createdAt,
-        }))
-      );
-      console.log("=== END DEBUG ===");
-    }
-  }, [users]);
-
   const handleRefresh = async () => {
     setIsRefreshing(true);
     await dispatch(
@@ -105,6 +85,8 @@ const FreespeekUsersPage: React.FC = () => {
       </div>
     );
   }
+
+  const safeUsers = Array.isArray(users) ? users : [];
 
   return (
     <div className="space-y-4 lg:space-y-6">
@@ -172,7 +154,7 @@ const FreespeekUsersPage: React.FC = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {users.map((user: User, index: number) => (
+              {safeUsers.map((user: User, index: number) => (
                 <tr
                   key={user._id}
                   className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}
@@ -183,8 +165,16 @@ const FreespeekUsersPage: React.FC = () => {
                   <td className="px-1 sm:px-2 lg:px-6 py-4 whitespace-nowrap">
                     <img
                       className="h-6 w-6 sm:h-8 sm:w-8 lg:h-10 lg:w-10 rounded-full"
-                      src={user.profilePicture}
-                      alt={user.fullName}
+                      src={
+                        user.profilePicture ||
+                        "https://via.placeholder.com/40x40/3B82F6/FFFFFF?text=U"
+                      }
+                      alt={user.fullName || "User"}
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src =
+                          "https://via.placeholder.com/40x40/3B82F6/FFFFFF?text=U";
+                      }}
                     />
                   </td>
                   <td className="px-1 sm:px-2 lg:px-6 py-4 text-sm font-medium text-gray-900">
@@ -193,15 +183,16 @@ const FreespeekUsersPage: React.FC = () => {
                         {user.fullName}
                       </div>
                       <div className="text-xs text-gray-500 sm:hidden">
-                        {user.location.address.length > 30
+                        {user.location?.address &&
+                        user.location.address.length > 30
                           ? `${user.location.address.substring(0, 30)}...`
-                          : user.location.address}
+                          : user.location?.address || "No location"}
                       </div>
                     </div>
                   </td>
                   <td className="hidden sm:table-cell px-2 lg:px-6 py-4 text-sm text-gray-500">
                     <div className="max-w-[120px] lg:max-w-xs truncate">
-                      {user.location.address}
+                      {user.location?.address || "No location"}
                     </div>
                   </td>
                   <td className="hidden lg:table-cell px-6 py-4 text-sm text-gray-500">
@@ -240,7 +231,6 @@ const FreespeekUsersPage: React.FC = () => {
           </table>
         </div>
 
-        {/* Pagination */}
         {totalPages > 1 && (
           <div className="px-2 sm:px-4 lg:px-6 py-4 border-t border-gray-200">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
