@@ -72,7 +72,6 @@ const UserProfilePage: React.FC = () => {
   const dispatch = useAppDispatch();
 
   // Get the full Redux state to debug
-  const fullState = useAppSelector((state: any) => state);
   const { currentUser, isLoading, error } = useAppSelector(
     (state: any) => state.users
   );
