@@ -43,9 +43,7 @@ const LiveUsersPage: React.FC = () => {
           const count =
             (onlineCountResponse as any).count || onlineCountResponse;
           setOnlineCount(count);
-          console.log("Online users count:", count);
 
-          // Get all users and try to identify online ones
           try {
             const allUsersResponse = await apiService.getUsers(
               1,
@@ -57,9 +55,7 @@ const LiveUsersPage: React.FC = () => {
               (allUsersResponse as any).data?.users ||
               (allUsersResponse as any).users ||
               [];
-            console.log("All users:", allUsers);
 
-            // Filter users who might be online (recent activity)
             const now = new Date();
             const thirtyMinutesAgo = new Date(now.getTime() - 30 * 60 * 1000);
 
@@ -70,13 +66,11 @@ const LiveUsersPage: React.FC = () => {
 
             setUsers(onlineUsers as LiveUser[]);
           } catch (userError) {
-            console.error("Error fetching users:", userError);
             setUsers([]);
           }
         }
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching live users:", error);
         setLoading(false);
       }
     };
@@ -127,18 +121,14 @@ const LiveUsersPage: React.FC = () => {
         const onlineCountResponse = await apiService.getOnlineUsersCount();
         const count = (onlineCountResponse as any).count || onlineCountResponse;
         setOnlineCount(count);
-        console.log("Online users count:", count);
 
-        // Get all users and try to identify online ones
         try {
           const allUsersResponse = await apiService.getUsers(1, 50, "", "all");
           const allUsers =
             (allUsersResponse as any).data?.users ||
             (allUsersResponse as any).users ||
             [];
-          console.log("All users:", allUsers);
 
-          // Filter users who might be online (recent activity)
           const now = new Date();
           const thirtyMinutesAgo = new Date(now.getTime() - 30 * 60 * 1000);
 
@@ -149,13 +139,11 @@ const LiveUsersPage: React.FC = () => {
 
           setUsers(onlineUsers as LiveUser[]);
         } catch (userError) {
-          console.error("Error fetching users:", userError);
           setUsers([]);
         }
       }
       setRefreshing(false);
     } catch (error) {
-      console.error("Error refreshing live users:", error);
       setRefreshing(false);
     }
   };

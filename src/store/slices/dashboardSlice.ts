@@ -43,9 +43,6 @@ export const fetchDashboardStats = createAsyncThunk(
         apiService.getOnlineUsersCount(),
       ]);
 
-      console.log("Dashboard stats response:", statsResponse);
-      console.log("Online users response:", onlineUsersResponse);
-
       return {
         ...(statsResponse as any),
         data: {
@@ -54,7 +51,6 @@ export const fetchDashboardStats = createAsyncThunk(
         },
       };
     } catch (error: any) {
-      console.error("Dashboard fetch error:", error);
       return rejectWithValue(
         error.message || "Failed to fetch dashboard stats"
       );

@@ -24,7 +24,6 @@ class ApiService {
     options: RequestInit = {}
   ): Promise<T> {
     const url = `${this.baseURL}${endpoint}`;
-    console.log("🔍 API: Making request to:", url);
 
     const config: RequestInit = {
       headers: {
@@ -34,48 +33,26 @@ class ApiService {
       ...options,
     };
 
-    // Add authorization header - JWT token takes precedence over admin secret
     if (this.authToken) {
-      console.log("🔍 API: Using JWT token for authorization");
       config.headers = {
         ...config.headers,
         Authorization: `Bearer ${this.authToken}`,
       };
     } else {
-      console.log("🔍 API: Using admin secret for authorization");
-      // Fallback to admin secret for non-authenticated requests
       config.headers = {
         ...config.headers,
         Authorization: `Bearer ${ADMIN_SECRET}`,
       };
     }
 
-    console.log("🔍 API: Request config:", {
-      url,
-      method: config.method || "GET",
-      headers: config.headers,
-    });
-
     try {
       const response = await fetch(url, config);
-      console.log("🔍 API: Response received:", {
-        status: response.status,
-        statusText: response.statusText,
-        ok: response.ok,
-      });
 
       if (response.status === 401 || response.status === 403) {
-        console.log("🔍 API: Auth error, status:", response.status);
-        // Clear invalid token and try to fallback to admin secret
         this.clearAuthToken();
         localStorage.removeItem("authToken");
 
-        // If this was a 403 and we were using a JWT token, try again with admin secret
         if (response.status === 403 && this.authToken) {
-          console.log(
-            "🔍 API: JWT token failed, retrying with admin secret..."
-          );
-          // Retry the request with admin secret
           const retryConfig = {
             ...config,
             headers: {
@@ -85,28 +62,17 @@ class ApiService {
           };
 
           try {
-            console.log("🔍 API: Retrying request with admin secret");
             const retryResponse = await fetch(url, retryConfig);
-            console.log("🔍 API: Retry response:", {
-              status: retryResponse.status,
-              statusText: retryResponse.statusText,
-              ok: retryResponse.ok,
-            });
 
             if (retryResponse.ok) {
               const retryData = await retryResponse.json();
-              console.log("🔍 API: Retry successful, data:", retryData);
               return retryData;
             }
           } catch (retryError) {
-            console.log(
-              "🔍 API: Admin secret fallback also failed:",
-              retryError
-            );
+            // Handle retry error silently
           }
         }
 
-        // If we get here, both JWT and admin secret failed
         const data = await response.json();
         const errorMessage =
           data.message ||
@@ -114,28 +80,21 @@ class ApiService {
           (response.status === 403
             ? "permission error"
             : "Authentication failed");
-        console.log("🔍 API: Throwing error:", errorMessage);
         throw new Error(errorMessage);
       }
 
       const data = await response.json();
-      console.log("🔍 API: Request successful, data:", data);
 
       if (!response.ok) {
-        // Extract error message from response
         const errorMessage =
           data.message ||
           data.error ||
           `HTTP error! status: ${response.status}`;
-        console.log("🔍 API: Request not ok, throwing error:", errorMessage);
         throw new Error(errorMessage);
       }
 
       return data;
     } catch (error) {
-      console.error("🔍 API: Request failed:", error);
-      console.error("🔍 API: Request URL:", url);
-      console.error("🔍 API: Request config:", config);
       throw error;
     }
   }
@@ -253,19 +212,10 @@ class ApiService {
   }
 
   async getUserById(id: string) {
-    console.log("🔍 API: getUserById called with ID:", id);
-    console.log(
-      "🔍 API: Current authToken:",
-      this.authToken ? "exists" : "none"
-    );
-    console.log("🔍 API: ADMIN_SECRET available:", ADMIN_SECRET ? "yes" : "no");
-
     try {
       const response = await this.request(`/admin/users/${id}`);
-      console.log("🔍 API: getUserById successful response:", response);
       return response;
     } catch (error) {
-      console.error("🔍 API: getUserById failed with error:", error);
       throw error;
     }
   }

@@ -142,44 +142,14 @@ const usersSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchUserById.fulfilled, (state, action) => {
-        console.log(
-          "🔍 UsersSlice: fetchUserById fulfilled with payload:",
-          action.payload
-        );
-        console.log("🔍 UsersSlice: Payload type:", typeof action.payload);
-        console.log(
-          "🔍 UsersSlice: Payload keys:",
-          action.payload ? Object.keys(action.payload) : "null"
-        );
-        console.log(
-          "🔍 UsersSlice: Payload.data:",
-          (action.payload as any)?.data
-        );
-
         state.isLoading = false;
-        // Check if the response has a data wrapper
         const userData = (action.payload as any)?.data || action.payload;
         state.currentUser = userData;
         state.error = null;
-
-        console.log(
-          "🔍 UsersSlice: Updated currentUser to:",
-          state.currentUser
-        );
-        console.log("🔍 UsersSlice: Final state:", {
-          isLoading: state.isLoading,
-          currentUser: state.currentUser,
-          error: state.error,
-        });
       })
       .addCase(fetchUserById.rejected, (state, action) => {
-        console.log(
-          "🔍 UsersSlice: fetchUserById rejected with error:",
-          action.payload
-        );
         state.isLoading = false;
         state.error = action.payload as string;
-        console.log("🔍 UsersSlice: Updated error to:", state.error);
       })
       // Update user
       .addCase(updateUser.pending, (state) => {
