@@ -214,8 +214,7 @@ class ApiService {
 
   async getUserById(id: string) {
     try {
-      const response = await this.request(`/admin/users/${id}`);
-      return response;
+      return this.request(`/admin/users/${id}`);
     } catch (error) {
       throw error;
     }
@@ -229,9 +228,13 @@ class ApiService {
   }
 
   async deleteUser(id: string) {
-    return this.request(`/users/${id}`, {
-      method: "DELETE",
-    });
+    try {
+      return this.request(`/admin/users/${id}`, {
+        method: "DELETE",
+      });
+    } catch (error) {
+      throw error;
+    }
   }
 
   // Support chats endpoints

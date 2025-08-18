@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { usePageTitle } from "../hooks/usePageTitle";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { fetchUserById } from "../store/slices/usersSlice";
+import { fetchUserById, deleteUser } from "../store/slices/usersSlice";
 import {
   ChevronLeft,
   User,
@@ -22,6 +22,7 @@ import {
   Edit3,
   Trash2,
   Ban,
+  AlertTriangle,
 } from "lucide-react";
 
 interface UserProfile {
@@ -77,6 +78,8 @@ const UserProfilePage: React.FC = () => {
   );
 
   const [user, setUser] = useState<UserProfile | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   usePageTitle("User Profile");
 
@@ -111,7 +114,33 @@ const UserProfilePage: React.FC = () => {
   };
 
   const handleDeleteUser = () => {
-    // Handle delete user
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!userId) return;
+
+    setIsDeleting(true);
+    try {
+      const result: any = await dispatch(deleteUser(userId)).unwrap();
+
+      if (result.success) {
+        // Navigate back to users list
+        navigate("/freespeek-users");
+      } else {
+        alert(`Failed to delete user: ${result.message || "Unknown error"}`);
+      }
+    } catch (error: any) {
+      console.error("Error deleting user:", error);
+      alert(`Failed to delete user: ${error.message || "Please try again."}`);
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteModal(false);
+    }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
   };
 
   if (isLoading) {
@@ -754,6 +783,52 @@ const UserProfilePage: React.FC = () => {
             )}
         </div>
       ) : null}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="h-10 w-10 bg-red-100 rounded-full flex items-center justify-center">
+                <AlertTriangle className="h-6 w-6 text-red-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">
+                Delete User
+              </h3>
+            </div>
+
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete <strong>{user?.fullName}</strong>?
+              This action cannot be undone and will permanently remove the user
+              account.
+            </p>
+
+            <div className="flex space-x-3">
+              <button
+                onClick={cancelDelete}
+                disabled={isDeleting}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                disabled={isDeleting}
+                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 flex items-center justify-center"
+              >
+                {isDeleting ? (
+                  <>
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent mr-2"></div>
+                    Deleting...
+                  </>
+                ) : (
+                  "Delete User"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
