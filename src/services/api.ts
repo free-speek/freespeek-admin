@@ -1,5 +1,6 @@
 import { config } from "../config/environment";
 
+//api
 const API_BASE_URL = config.apiUrl;
 const ADMIN_SECRET = config.adminSecret;
 
