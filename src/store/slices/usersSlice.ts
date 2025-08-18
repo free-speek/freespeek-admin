@@ -95,8 +95,8 @@ export const deleteUser = createAsyncThunk(
   "users/deleteUser",
   async (id: string, { rejectWithValue }) => {
     try {
-      await apiService.deleteUser(id);
-      return id;
+      const response = await apiService.deleteUser(id);
+      return response;
     } catch (error: any) {
       return rejectWithValue(error.message || "Failed to delete user");
     }
@@ -178,10 +178,12 @@ const usersSlice = createSlice({
       })
       .addCase(deleteUser.fulfilled, (state, action) => {
         state.isLoading = false;
-        const deletedId = action.payload as string;
-        state.users = state.users.filter((user) => user._id !== deletedId);
-        if (state.currentUser?._id === deletedId) {
-          state.currentUser = null;
+        // Remove the deleted user from the users array
+        const deletedUser = action.payload as any;
+        if (deletedUser && deletedUser._id) {
+          state.users = state.users.filter(
+            (user) => user._id !== deletedUser._id
+          );
         }
         state.error = null;
       })
