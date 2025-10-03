@@ -23,6 +23,12 @@ interface User {
   isVerified: boolean;
   isSuspended: boolean;
   createdAt: string;
+  appVersion?: {
+    version: string;
+    buildNumber: string;
+    platform: string;
+    lastUsed: string;
+  };
 }
 
 const FreespeekUsersPage: React.FC = () => {
@@ -30,6 +36,7 @@ const FreespeekUsersPage: React.FC = () => {
   const { users, isLoading, error, totalPages, totalUsers } = useAppSelector(
     (state: any) => state.users
   );
+
   const navigate = useNavigate();
   const [searchTerm] = useState("");
   const [statusFilter] = useState("all");
@@ -96,7 +103,9 @@ const FreespeekUsersPage: React.FC = () => {
             <h1 className="text-xl lg:text-2xl font-bold text-gray-900">
               Freespeek Users
             </h1>
-            <p className="text-gray-600">Manage your Freespeek users</p>
+            <p className="text-gray-600">
+              Manage your Freespeek users and monitor user activity
+            </p>
           </div>
           <button
             onClick={handleRefresh}
@@ -148,6 +157,12 @@ const FreespeekUsersPage: React.FC = () => {
                 <th className="px-1 sm:px-2 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
                 </th>
+                <th className="hidden xl:table-cell px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  App Version
+                  <span className="ml-1 text-xs text-gray-400">
+                    (Coming Soon)
+                  </span>
+                </th>
                 <th className="px-1 sm:px-2 lg:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Action
                 </th>
@@ -188,6 +203,9 @@ const FreespeekUsersPage: React.FC = () => {
                           ? `${user.location.address.substring(0, 30)}...`
                           : user.location?.address || "No location"}
                       </div>
+                      <div className="text-xs text-gray-400 sm:hidden mt-1">
+                        App version tracking coming soon
+                      </div>
                     </div>
                   </td>
                   <td className="hidden sm:table-cell px-2 lg:px-6 py-4 text-sm text-gray-500">
@@ -216,6 +234,13 @@ const FreespeekUsersPage: React.FC = () => {
                     >
                       {user.status.toUpperCase()}
                     </span>
+                  </td>
+                  <td className="hidden xl:table-cell px-6 py-4 text-sm text-gray-500">
+                    <div className="min-w-0">
+                      <div className="text-gray-400 text-xs">
+                        App version tracking coming soon
+                      </div>
+                    </div>
                   </td>
                   <td className="px-1 sm:px-2 lg:px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <button

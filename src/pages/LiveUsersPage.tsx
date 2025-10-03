@@ -27,6 +27,7 @@ const LiveUsersPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const [onlineCount, setOnlineCount] = useState<number>(0);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   useEffect(() => {
     const fetchLiveUsers = async () => {
@@ -70,6 +71,7 @@ const LiveUsersPage: React.FC = () => {
           }
         }
         setLoading(false);
+        setLastUpdated(new Date());
       } catch (error) {
         setLoading(false);
       }
@@ -79,7 +81,7 @@ const LiveUsersPage: React.FC = () => {
 
     const interval = setInterval(() => {
       fetchLiveUsers();
-    }, 30000);
+    }, 10000); // 10 seconds for real-time updates
 
     return () => clearInterval(interval);
   }, []);
@@ -160,18 +162,26 @@ const LiveUsersPage: React.FC = () => {
     <div className="p-6 space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
         <div className="flex items-center space-x-4">
-          <AnimatedText
-            animationType="typewriter"
-            delay={0}
-            className="text-xl lg:text-2xl font-bold text-gray-900"
-          >
-            Live Users
-          </AnimatedText>
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-            <span className="text-sm text-green-600 font-medium">
-              {onlineCount || users.length} Active
-            </span>
+          <div>
+            <AnimatedText
+              animationType="typewriter"
+              delay={0}
+              className="text-xl lg:text-2xl font-bold text-gray-900"
+            >
+              Live Users
+            </AnimatedText>
+            <div className="flex items-center space-x-2 mt-1">
+              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-sm text-green-600 font-medium">
+                {onlineCount || users.length} Active
+              </span>
+              {lastUpdated && (
+                <span className="text-xs text-gray-500">
+                  • Last updated: {lastUpdated.toLocaleTimeString()} •
+                  Auto-refresh: 10s
+                </span>
+              )}
+            </div>
           </div>
         </div>
 

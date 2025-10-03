@@ -18,6 +18,8 @@ import {
   Menu,
   X,
   FileText as FileTextIcon,
+  Mail,
+  Activity,
 } from "lucide-react";
 import { NavigationItem } from "../types";
 import logoText from "../assets/logoText.png";
@@ -54,6 +56,18 @@ const navigationItems: NavigationItem[] = [
     icon: "MessageCircle",
     path: "/support-chats",
   },
+  {
+    id: "bulk-email",
+    label: "Bulk Email",
+    icon: "Mail",
+    path: "/bulk-email",
+  },
+  {
+    id: "user-tracking",
+    label: "User Tracking",
+    icon: "Activity",
+    path: "/user-tracking",
+  },
 ];
 
 const getIconComponent = (iconName: string) => {
@@ -69,6 +83,8 @@ const getIconComponent = (iconName: string) => {
     MapPin,
     MessageSquare,
     FileTextIcon,
+    Mail,
+    Activity,
   };
   return iconMap[iconName] || LayoutDashboard;
 };
@@ -99,6 +115,8 @@ const AdminLayout: React.FC = () => {
     if (location.pathname === "/live-users") return "Live Users";
     if (location.pathname === "/messages") return "Messages";
     if (location.pathname === "/support-chats") return "Support Chats";
+    if (location.pathname === "/bulk-email") return "Bulk Email";
+    if (location.pathname === "/user-tracking") return "User Tracking";
     if (location.pathname.startsWith("/chat-details")) return "Chat Details";
     if (location.pathname.startsWith("/chat-history")) return "Chat History";
     if (location.pathname.startsWith("/user-profile")) return "User Profile";

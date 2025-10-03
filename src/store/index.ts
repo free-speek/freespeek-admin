@@ -6,6 +6,8 @@ import chatsReducer from "./slices/chatsSlice";
 import supportChatsReducer from "./slices/supportChatsSlice";
 import messagesReducer from "./slices/messagesSlice";
 import chatHistoryReducer from "./slices/chatHistorySlice";
+import bulkEmailReducer from "./slices/bulkEmailSlice";
+import userTrackingReducer from "./slices/userTrackingSlice";
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +18,8 @@ export const store = configureStore({
     supportChats: supportChatsReducer,
     messages: messagesReducer,
     chatHistory: chatHistoryReducer,
+    bulkEmail: bulkEmailReducer,
+    userTracking: userTrackingReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
