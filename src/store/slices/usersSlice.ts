@@ -25,6 +25,12 @@ interface User {
   dateOfBirth?: string;
   homeLocation?: string;
   address?: string;
+  appVersion?: {
+    version: string;
+    buildNumber: string;
+    platform: string;
+    lastUsed: string;
+  };
 }
 
 interface UsersState {
@@ -35,6 +41,9 @@ interface UsersState {
   totalPages: number;
   currentPage: number;
   totalUsers: number;
+  appVersionStats: any | null;
+  isAppVersionLoading: boolean;
+  appVersionError: string | null;
 }
 
 const initialState: UsersState = {
@@ -45,6 +54,9 @@ const initialState: UsersState = {
   totalPages: 1,
   currentPage: 1,
   totalUsers: 0,
+  appVersionStats: null,
+  isAppVersionLoading: false,
+  appVersionError: null,
 };
 
 export const fetchUsers = createAsyncThunk(
@@ -99,6 +111,20 @@ export const deleteUser = createAsyncThunk(
       return response;
     } catch (error: any) {
       return rejectWithValue(error.message || "Failed to delete user");
+    }
+  }
+);
+
+export const fetchAppVersionStats = createAsyncThunk(
+  "users/fetchAppVersionStats",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await apiService.getAppVersionStats();
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.message || "Failed to fetch app version stats"
+      );
     }
   }
 );
@@ -190,6 +216,20 @@ const usersSlice = createSlice({
       .addCase(deleteUser.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
+      })
+      // Fetch app version stats
+      .addCase(fetchAppVersionStats.pending, (state) => {
+        state.isAppVersionLoading = true;
+        state.appVersionError = null;
+      })
+      .addCase(fetchAppVersionStats.fulfilled, (state, action) => {
+        state.isAppVersionLoading = false;
+        state.appVersionStats = (action.payload as any)?.data || action.payload;
+        state.appVersionError = null;
+      })
+      .addCase(fetchAppVersionStats.rejected, (state, action) => {
+        state.isAppVersionLoading = false;
+        state.appVersionError = action.payload as string;
       });
   },
 });

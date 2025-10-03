@@ -8,6 +8,7 @@ import {
 import { Provider } from "react-redux";
 import { store } from "./store";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { ToastProvider } from "./contexts/ToastContext";
 import AdminLayout from "./layouts/AdminLayout";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
@@ -19,6 +20,14 @@ import SupportChatDetailsPage from "./pages/SupportChatDetailsPage";
 import ChatHistoryPage from "./pages/ChatHistoryPage";
 import ChatDetailsPage from "./pages/ChatDetailsPage";
 import UserProfilePage from "./pages/UserProfilePage";
+import BulkEmailDashboardPage from "./pages/BulkEmailDashboardPage";
+import ComposeEmailPage from "./pages/ComposeEmailPage";
+import RecipientsPage from "./pages/RecipientsPage";
+import TemplatesPage from "./pages/TemplatesPage";
+import TemplateDetailPage from "./pages/TemplateDetailPage";
+import EmailHistoryPage from "./pages/EmailHistoryPage";
+import EmailStatsPage from "./pages/EmailStatsPage";
+import UserTrackingPage from "./pages/UserTrackingPage";
 import Loader from "./components/Loader";
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
@@ -60,6 +69,17 @@ const AppContent: React.FC = () => {
           <Route path="live-users" element={<LiveUsersPage />} />
           <Route path="messages" element={<MessagesPage />} />
           <Route path="support-chats" element={<SupportChatsPage />} />
+          <Route path="bulk-email" element={<BulkEmailDashboardPage />} />
+          <Route path="bulk-email/compose" element={<ComposeEmailPage />} />
+          <Route path="bulk-email/recipients" element={<RecipientsPage />} />
+          <Route path="bulk-email/templates" element={<TemplatesPage />} />
+          <Route
+            path="bulk-email/templates/:id"
+            element={<TemplateDetailPage />}
+          />
+          <Route path="bulk-email/history" element={<EmailHistoryPage />} />
+          <Route path="bulk-email/statistics" element={<EmailStatsPage />} />
+          <Route path="user-tracking" element={<UserTrackingPage />} />
           <Route
             path="support-chat-details/:chatId"
             element={<SupportChatDetailsPage />}
@@ -77,7 +97,9 @@ const App: React.FC = () => {
   return (
     <AuthProvider>
       <Provider store={store}>
-        <AppContent />
+        <ToastProvider>
+          <AppContent />
+        </ToastProvider>
       </Provider>
     </AuthProvider>
   );

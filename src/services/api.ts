@@ -337,6 +337,275 @@ class ApiService {
     });
   }
 
+  // Bulk Email endpoints
+  async sendBulkEmail(
+    recipients: string[],
+    subject: string,
+    message: string,
+    templateId?: string
+  ) {
+    return this.request("/admin/bulk-email/send", {
+      method: "POST",
+      body: JSON.stringify({
+        recipients,
+        subject,
+        message,
+        templateId,
+      }),
+    });
+  }
+
+  async getBulkEmailTemplates() {
+    return this.request("/admin/bulk-email/templates");
+  }
+
+  async createBulkEmailTemplate(
+    name: string,
+    subject: string,
+    content: string
+  ) {
+    return this.request("/admin/bulk-email/templates", {
+      method: "POST",
+      body: JSON.stringify({ name, subject, content }),
+    });
+  }
+
+  async getBulkEmailHistory(page = 1, limit = 20) {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+    });
+    return this.request(`/admin/bulk-email/history?${params.toString()}`);
+  }
+
+  async getBulkEmailStats(filters?: {
+    timeFilter?: string;
+    startDate?: string;
+    endDate?: string;
+  }) {
+    const params = new URLSearchParams();
+    if (filters?.timeFilter) {
+      params.append("timeFilter", filters.timeFilter);
+    }
+    if (filters?.startDate) {
+      params.append("startDate", filters.startDate);
+    }
+    if (filters?.endDate) {
+      params.append("endDate", filters.endDate);
+    }
+
+    const queryString = params.toString();
+    return this.request(
+      `/admin/bulk-email/stats${queryString ? `?${queryString}` : ""}`
+    );
+  }
+
+  async uploadRecipientsCsv(file: File) {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    return this.request("/admin/bulk-email/upload-recipients", {
+      method: "POST",
+      body: formData,
+      headers: {
+        // Don't set Content-Type, let browser set it with boundary
+      },
+    });
+  }
+
+  async getRecipientsFromBackend(
+    page = 1,
+    limit = 100,
+    search = "",
+    status = "all"
+  ) {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+      search,
+      status,
+    });
+    return this.request(`/admin/bulk-email/recipients?${params.toString()}`);
+  }
+
+  async addRecipient(recipientData: {
+    name: string;
+    email: string;
+    status: string;
+  }) {
+    return this.request("/admin/bulk-email/recipients", {
+      method: "POST",
+      body: JSON.stringify(recipientData),
+    });
+  }
+
+  async updateRecipient(
+    id: string,
+    recipientData: {
+      name: string;
+      email: string;
+      status: string;
+    }
+  ) {
+    return this.request(`/admin/bulk-email/recipients/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(recipientData),
+    });
+  }
+
+  async deleteRecipient(id: string) {
+    return this.request(`/admin/bulk-email/recipients/${id}`, {
+      method: "DELETE",
+    });
+  }
+
+  // App Version endpoints (Admin only - use admin secret directly)
+  async getAppVersionStats() {
+    const url = `${this.baseURL}/app/version/stats`;
+    const config: RequestInit = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${ADMIN_SECRET}`,
+      },
+    };
+
+    try {
+      const response = await fetch(url, config);
+      const data = await response.json();
+
+      if (!response.ok) {
+        const errorMessage =
+          data.message ||
+          data.error ||
+          `HTTP error! status: ${response.status}`;
+        throw new Error(errorMessage);
+      }
+
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getUsersByVersion(version: string) {
+    const url = `${this.baseURL}/app/version/users/${version}`;
+    const config: RequestInit = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${ADMIN_SECRET}`,
+      },
+    };
+
+    try {
+      const response = await fetch(url, config);
+      const data = await response.json();
+
+      if (!response.ok) {
+        const errorMessage =
+          data.message ||
+          data.error ||
+          `HTTP error! status: ${response.status}`;
+        throw new Error(errorMessage);
+      }
+
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getAppVersionAnalytics(days = 30) {
+    const url = `${this.baseURL}/app/version/analytics?days=${days}`;
+    const config: RequestInit = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${ADMIN_SECRET}`,
+      },
+    };
+
+    try {
+      const response = await fetch(url, config);
+      const data = await response.json();
+
+      if (!response.ok) {
+        const errorMessage =
+          data.message ||
+          data.error ||
+          `HTTP error! status: ${response.status}`;
+        throw new Error(errorMessage);
+      }
+
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // User Tracking endpoints (Admin only)
+  async getUserTrackingStats() {
+    return this.request("/user-tracking/stats");
+  }
+
+  async getUserTrackingAnalytics(days = 30) {
+    return this.request(`/user-tracking/analytics?days=${days}`);
+  }
+
+  async getAllUserTracking(
+    page = 1,
+    limit = 50,
+    sortBy = "lastLoginDate",
+    sortOrder = "desc"
+  ) {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+      sortBy,
+      sortOrder,
+    });
+    return this.request(`/user-tracking/all?${params.toString()}`);
+  }
+
+  async getUsersByVersionFromTracking(version: string, platform?: string) {
+    const params = new URLSearchParams();
+    if (platform) {
+      params.append("platform", platform);
+    }
+    const queryString = params.toString();
+    return this.request(
+      `/user-tracking/users/${version}${queryString ? `?${queryString}` : ""}`
+    );
+  }
+
+  async getUserTrackingSummary(userId: string) {
+    return this.request(`/user-tracking/summary/${userId}`);
+  }
+
+  async updateUserSession(
+    userId: string,
+    sessionData: {
+      sessionStart?: string;
+      sessionEnd?: string;
+      duration?: number;
+    }
+  ) {
+    return this.request(`/user-tracking/session/${userId}`, {
+      method: "PUT",
+      body: JSON.stringify(sessionData),
+    });
+  }
+
+  async deleteUserTracking(userId: string) {
+    return this.request(`/user-tracking/${userId}`, {
+      method: "DELETE",
+    });
+  }
+
+  async cleanupUserTrackingRecords() {
+    return this.request("/user-tracking/cleanup", {
+      method: "POST",
+    });
+  }
+
   // Health check
   async healthCheck() {
     return this.request("/health");

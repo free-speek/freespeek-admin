@@ -112,3 +112,152 @@ export interface Breadcrumb {
   label: string;
   path?: string;
 }
+
+export interface BulkEmailTemplate {
+  id: string;
+  name: string;
+  subject: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface BulkEmailHistory {
+  id: string;
+  subject: string;
+  recipientCount: number;
+  sentAt: string;
+  status: "sent" | "failed" | "partial";
+  successCount: number;
+  failureCount: number;
+  createdBy: string;
+}
+
+export interface BulkEmailStats {
+  totalEmailsSent: number;
+  totalRecipients: number;
+  totalTemplates: number;
+  emailsSentToday: number;
+  emailsSentThisWeek: number;
+  emailsSentThisMonth: number;
+  averageOpenRate: number;
+  averageClickRate: number;
+  // Change indicators
+  emailsSentChange?: string;
+  recipientsChange?: string;
+  templatesChange?: string;
+  todayChange?: string;
+  openRateChange?: string;
+  clickRateChange?: string;
+  // Chart data
+  weeklyStats?: Array<{ day: string; emails: number }>;
+  monthlyStats?: Array<{ month: string; emails: number }>;
+  // Recent activity
+  recentActivity?: Array<{
+    type: "email" | "template" | "recipients" | "analytics";
+    title: string;
+    time: string;
+    details: string;
+  }>;
+}
+
+export interface BulkEmailRecipient {
+  id: string;
+  email: string;
+  name: string;
+  status: "ACTIVE" | "SUSPENDED";
+  isSelected: boolean;
+}
+
+// User Tracking Types
+export interface UserTrackingData {
+  userId: string;
+  userInfo: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    profilePicture?: string;
+  };
+  accountCreatedDate: string;
+  lastLoginDate: string;
+  currentVersion: {
+    version: string;
+    buildNumber: string;
+    platform: string;
+    deviceId: string;
+    lastUsed: string;
+  };
+  totalLogins: number;
+  lastSeen: string;
+  recentLoginHistory: Array<{
+    loginDate: string;
+    platform: string;
+    version: string;
+    buildNumber: string;
+    deviceId: string;
+  }>;
+  appUsageStats: {
+    totalSessions: number;
+    averageSessionDuration: number;
+    lastSessionStart?: string;
+    lastSessionEnd?: string;
+  };
+}
+
+export interface UserTrackingStats {
+  totalUsers: number;
+  versionDistribution: Array<{
+    version: string;
+    platform: string;
+    userCount: number;
+    percentage: number;
+  }>;
+  platformDistribution: Array<{
+    platform: string;
+    userCount: number;
+    percentage: number;
+  }>;
+  recentActivity: Array<{
+    date: string;
+    dailyLogins: number;
+  }>;
+  lastUpdated: string;
+}
+
+export interface UserTrackingAnalytics {
+  totalUsers: number;
+  versionDistribution: Array<{
+    version: string;
+    platform: string;
+    userCount: number;
+    percentage: number;
+  }>;
+  platformDistribution: Array<{
+    platform: string;
+    userCount: number;
+    percentage: number;
+  }>;
+  dailyLogins: Array<{
+    date: string;
+    uniqueUsers: number;
+    totalLogins: number;
+  }>;
+  versionAdoption: Array<{
+    version: string;
+    platform: string;
+    totalUsers: number;
+    dates: Array<{
+      date: string;
+      count: number;
+    }>;
+  }>;
+  platformTrends: Array<{
+    platform: string;
+    totalUsers: number;
+    dates: Array<{
+      date: string;
+      count: number;
+    }>;
+  }>;
+  period: string;
+}
