@@ -1,0 +1,57 @@
+UPDATE YOUR FREESPEEK APP - NEW FEATURES AVAILABLE!
+
+Hello {{userName}},
+
+We're excited to announce that a NEW VERSION of FreeSpeek (1.1.5) is now available with amazing new features and important security improvements!
+
+⚠️ IMPORTANT: Your current app version is outdated. To continue enjoying the best FreeSpeek experience and ensure your data security, please update to the latest version.
+
+WHAT'S NEW IN VERSION 1.1.5:
+• Enhanced Security: Improved authentication and data protection
+• Better Performance: Faster loading times and smoother experience  
+• New UI Features: Updated interface with better navigation
+• Bug Fixes: Resolved issues reported by our community
+• Stability Improvements: More reliable app performance
+• Privacy Enhancements: Better control over your personal data
+
+📱 HOW TO UPDATE:
+
+For iOS Users:
+1. Open the App Store on your iPhone/iPad
+2. Search for "FreeSpeek App"
+3. Tap "Update" next to the FreeSpeek app
+4. Wait for the update to download and install
+
+For Android Users:
+1. Open the Google Play Store on your device
+2. Search for "FreeSpeek App" 
+3. Tap "Update" next to the FreeSpeek app
+4. Wait for the update to download and install
+
+🔗 QUICK UPDATE LINKS:
+• iOS: https://apps.apple.com/pk/app/freespeek-app/id6741692095
+• Android: https://play.google.com/store/apps/details?id=com.freespeek_app
+
+💡 WHY SHOULD YOU UPDATE?
+• Security: Protect your account with the latest security features
+• Features: Access to new functionality and improvements
+• Performance: Enjoy faster, more stable app performance
+• Compatibility: Ensure compatibility with latest device updates
+• Support: Continue receiving customer support and bug fixes
+
+🆘 NEED HELP?
+If you're having trouble updating your app or have any questions, please contact our support team:
+• Email: support@freespeek.net
+• Website: https://freespeek.net
+• In-app Support: Open the app and go to Settings > Help & Support
+
+Thank you for being a valued member of the FreeSpeek community!
+
+Best regards,
+The FreeSpeek Team
+
+---
+This email was sent to notify you about an important app update.
+If you no longer wish to receive these notifications, you can unsubscribe here.
+© 2025 FreeSpeek. All rights reserved.
+FreeSpeek - Connecting Communities, Building Trust
