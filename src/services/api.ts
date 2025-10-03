@@ -370,6 +370,24 @@ class ApiService {
     });
   }
 
+  async updateBulkEmailTemplate(
+    templateId: string,
+    name: string,
+    subject: string,
+    content: string
+  ) {
+    return this.request(`/admin/bulk-email/templates/${templateId}`, {
+      method: "PUT",
+      body: JSON.stringify({ name, subject, content }),
+    });
+  }
+
+  async deleteBulkEmailTemplate(templateId: string) {
+    return this.request(`/admin/bulk-email/templates/${templateId}`, {
+      method: "DELETE",
+    });
+  }
+
   async getBulkEmailHistory(page = 1, limit = 20) {
     const params = new URLSearchParams({
       page: page.toString(),

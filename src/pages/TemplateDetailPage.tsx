@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { fetchTemplates } from "../store/slices/bulkEmailSlice";
+import { fetchTemplates, deleteTemplate } from "../store/slices/bulkEmailSlice";
 import { usePageTitle } from "../hooks/usePageTitle";
 import {
   ArrowLeft,
@@ -62,9 +62,7 @@ const TemplateDetailPage: React.FC = () => {
           <button
             onClick={() => navigate("/bulk-email/templates")}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Back to Templates
-          </button>
+          ></button>
         </div>
       </div>
     );
@@ -75,15 +73,25 @@ const TemplateDetailPage: React.FC = () => {
     showToast("Template content copied to clipboard!", "success");
   };
 
-  const handleDelete = () => {
-    // TODO: Implement delete functionality
-    showToast("Delete functionality coming soon!", "info");
+  const handleDelete = async () => {
+    if (!template) return;
+
+    try {
+      await dispatch(deleteTemplate(template.id));
+      showToast("Template deleted successfully!", "success");
+      navigate("/bulk-email/templates");
+    } catch (error) {
+      console.error("Error deleting template:", error);
+      showToast("Failed to delete template", "error");
+    }
     setShowDeleteModal(false);
   };
 
   const handleEdit = () => {
-    // TODO: Navigate to edit page or open edit modal
-    showToast("Edit functionality coming soon!", "info");
+    // Navigate to templates page with edit mode
+    navigate("/bulk-email/templates", {
+      state: { editTemplate: template },
+    });
   };
 
   return (
@@ -96,7 +104,6 @@ const TemplateDetailPage: React.FC = () => {
             className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to Templates
           </button>
           <div>
             <h1 className="text-2xl font-bold text-gray-900">

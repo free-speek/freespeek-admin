@@ -120,6 +120,43 @@ export const createTemplate = createAsyncThunk(
   }
 );
 
+export const updateTemplate = createAsyncThunk(
+  "bulkEmail/updateTemplate",
+  async (
+    {
+      templateId,
+      name,
+      subject,
+      content,
+    }: { templateId: string; name: string; subject: string; content: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await apiService.updateBulkEmailTemplate(
+        templateId,
+        name,
+        subject,
+        content
+      );
+      return { templateId, ...(response as object) };
+    } catch (error: any) {
+      return rejectWithValue(error.message || "Failed to update template");
+    }
+  }
+);
+
+export const deleteTemplate = createAsyncThunk(
+  "bulkEmail/deleteTemplate",
+  async (templateId: string, { rejectWithValue }) => {
+    try {
+      await apiService.deleteBulkEmailTemplate(templateId);
+      return templateId;
+    } catch (error: any) {
+      return rejectWithValue(error.message || "Failed to delete template");
+    }
+  }
+);
+
 export const fetchHistory = createAsyncThunk(
   "bulkEmail/fetchHistory",
   async (
@@ -327,6 +364,50 @@ const bulkEmailSlice = createSlice({
         state.templatesError = null;
       })
       .addCase(createTemplate.rejected, (state, action) => {
+        state.templatesLoading = false;
+        state.templatesError = action.payload as string;
+      });
+
+    // Update template
+    builder
+      .addCase(updateTemplate.pending, (state) => {
+        state.templatesLoading = true;
+        state.templatesError = null;
+      })
+      .addCase(updateTemplate.fulfilled, (state, action) => {
+        state.templatesLoading = false;
+        const { templateId, ...updatedTemplate } = action.payload as any;
+        const index = state.templates.findIndex(
+          (t: any) => t.id === templateId
+        );
+        if (index !== -1) {
+          state.templates[index] = {
+            ...state.templates[index],
+            ...updatedTemplate,
+          };
+        }
+        state.templatesError = null;
+      })
+      .addCase(updateTemplate.rejected, (state, action) => {
+        state.templatesLoading = false;
+        state.templatesError = action.payload as string;
+      });
+
+    // Delete template
+    builder
+      .addCase(deleteTemplate.pending, (state) => {
+        state.templatesLoading = true;
+        state.templatesError = null;
+      })
+      .addCase(deleteTemplate.fulfilled, (state, action) => {
+        state.templatesLoading = false;
+        const templateId = action.payload as string;
+        state.templates = state.templates.filter(
+          (t: any) => t.id !== templateId
+        );
+        state.templatesError = null;
+      })
+      .addCase(deleteTemplate.rejected, (state, action) => {
         state.templatesLoading = false;
         state.templatesError = action.payload as string;
       });

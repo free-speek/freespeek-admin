@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { fetchTemplates, createTemplate } from "../store/slices/bulkEmailSlice";
+import {
+  fetchTemplates,
+  createTemplate,
+  updateTemplate,
+  deleteTemplate,
+} from "../store/slices/bulkEmailSlice";
 import { usePageTitle } from "../hooks/usePageTitle";
 import {
   FileText,
@@ -11,13 +16,21 @@ import {
   Code,
   FileCode,
   Monitor,
-  ExternalLink,
   Eye,
+  Edit,
+  Trash2,
+  Copy,
+  Sparkles,
 } from "lucide-react";
 import Loader from "../components/Loader";
 import AppStoreLink from "../components/AppStoreLink";
 import { useToast } from "../contexts/ToastContext";
 import { Link } from "react-router-dom";
+import {
+  preBuiltTemplates,
+  PreBuiltTemplate,
+  getAllCategories,
+} from "../data/preBuiltTemplates";
 
 const TemplatesPage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -30,8 +43,13 @@ const TemplatesPage: React.FC = () => {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [showPreBuiltModal, setShowPreBuiltModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [previewTemplate] = useState<any>(null);
+  const [editingTemplate, setEditingTemplate] = useState<any>(null);
+  const [deletingTemplate, setDeletingTemplate] = useState<any>(null);
   const [newTemplate, setNewTemplate] = useState({
     name: "",
     subject: "",
@@ -40,9 +58,10 @@ const TemplatesPage: React.FC = () => {
   const [htmlFile, setHtmlFile] = useState<File | null>(null);
   const [htmlCode, setHtmlCode] = useState("");
   const [inputMethod, setInputMethod] = useState<
-    "text" | "html-file" | "html-code"
+    "text" | "html-file" | "html-code" | "pre-built"
   >("text");
   const [showPreview, setShowPreview] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("all");
 
   usePageTitle("Email Templates");
 
@@ -127,6 +146,83 @@ const TemplatesPage: React.FC = () => {
     showToast("Template copied to create form", "info");
   };
 
+  const handleEdit = (template: any) => {
+    setEditingTemplate(template);
+    setNewTemplate({
+      name: template.name,
+      subject: template.subject,
+      content: template.content,
+    });
+    setHtmlCode(template.content);
+    setInputMethod(template.content.includes("<") ? "html-code" : "text");
+    setShowEditModal(true);
+  };
+
+  const handleDelete = (template: any) => {
+    setDeletingTemplate(template);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!deletingTemplate) return;
+
+    try {
+      await dispatch(deleteTemplate(deletingTemplate.id));
+      setShowDeleteModal(false);
+      setDeletingTemplate(null);
+      showToast("Template deleted successfully!", "success");
+    } catch (error) {
+      console.error("Error deleting template:", error);
+      showToast("Failed to delete template", "error");
+    }
+  };
+
+  const handleUpdateTemplate = async () => {
+    if (
+      !newTemplate.name.trim() ||
+      !newTemplate.subject.trim() ||
+      !getCurrentContent().trim()
+    ) {
+      showToast("Please fill in all template fields", "warning");
+      return;
+    }
+
+    if (!editingTemplate) return;
+
+    try {
+      const templateData = {
+        templateId: editingTemplate.id,
+        name: newTemplate.name,
+        subject: newTemplate.subject,
+        content: getCurrentContent(),
+      };
+      await dispatch(updateTemplate(templateData));
+      setNewTemplate({ name: "", subject: "", content: "" });
+      setHtmlFile(null);
+      setHtmlCode("");
+      setInputMethod("text");
+      setShowEditModal(false);
+      setEditingTemplate(null);
+      showToast("Template updated successfully!", "success");
+    } catch (error) {
+      console.error("Error updating template:", error);
+      showToast("Failed to update template", "error");
+    }
+  };
+
+  const handleSelectPreBuiltTemplate = (template: PreBuiltTemplate) => {
+    setNewTemplate({
+      name: template.name,
+      subject: template.subject,
+      content: template.content,
+    });
+    setHtmlCode(template.content);
+    setInputMethod(template.isHtml ? "html-code" : "text");
+    setShowPreBuiltModal(false);
+    setShowCreateModal(true);
+    showToast(`Selected template: ${template.name}`, "success");
+  };
+
   const filteredTemplates = displayTemplates.filter(
     (template: any) =>
       (template.name?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
@@ -151,7 +247,6 @@ const TemplatesPage: React.FC = () => {
             className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to Dashboard
           </Link>
           <div>
             <h1 className="text-2xl font-bold text-gray-900">
@@ -163,6 +258,13 @@ const TemplatesPage: React.FC = () => {
           </div>
         </div>
         <div className="flex items-center gap-3">
+          <button
+            onClick={() => setShowPreBuiltModal(true)}
+            className="flex items-center gap-2 px-4 py-2 text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors"
+          >
+            <Sparkles className="h-4 w-4" />
+            Pre-built Templates
+          </button>
           <AppStoreLink
             href="#"
             onClick={(e: React.MouseEvent) => {
@@ -318,11 +420,40 @@ const TemplatesPage: React.FC = () => {
                       {template.subject || "No subject"}
                     </p>
                   </div>
-                  <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="flex items-center gap-1 px-2 py-1 bg-blue-600 text-white text-xs rounded">
-                      <ExternalLink className="h-3 w-3" />
-                      View
-                    </div>
+                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleEdit(template);
+                      }}
+                      className="flex items-center gap-1 px-2 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700 transition-colors"
+                      title="Edit template"
+                    >
+                      <Edit className="h-3 w-3" />
+                      Edit
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleCopy(template);
+                      }}
+                      className="flex items-center gap-1 px-2 py-1 bg-green-600 text-white text-xs rounded hover:bg-green-700 transition-colors"
+                      title="Copy template"
+                    >
+                      <Copy className="h-3 w-3" />
+                      Copy
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleDelete(template);
+                      }}
+                      className="flex items-center gap-1 px-2 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700 transition-colors"
+                      title="Delete template"
+                    >
+                      <Trash2 className="h-3 w-3" />
+                      Delete
+                    </button>
                   </div>
                 </div>
 
@@ -636,6 +767,248 @@ const TemplatesPage: React.FC = () => {
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Copy Template
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Pre-built Templates Modal */}
+      {showPreBuiltModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-lg font-medium text-gray-900 flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-purple-600" />
+                  Pre-built Email Templates
+                </h3>
+                <p className="text-sm text-gray-600 mt-1">
+                  Choose from professionally designed templates
+                </p>
+              </div>
+              <button
+                onClick={() => setShowPreBuiltModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Category Filter */}
+            <div className="mb-6">
+              <div className="flex gap-2 flex-wrap">
+                <button
+                  onClick={() => setSelectedCategory("all")}
+                  className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+                    selectedCategory === "all"
+                      ? "bg-purple-100 text-purple-700 border border-purple-300"
+                      : "bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200"
+                  }`}
+                >
+                  All Categories
+                </button>
+                {getAllCategories().map((category) => (
+                  <button
+                    key={category}
+                    onClick={() => setSelectedCategory(category)}
+                    className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+                      selectedCategory === category
+                        ? "bg-purple-100 text-purple-700 border border-purple-300"
+                        : "bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200"
+                    }`}
+                  >
+                    {category}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Templates Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {preBuiltTemplates
+                .filter(
+                  (template) =>
+                    selectedCategory === "all" ||
+                    template.category === selectedCategory
+                )
+                .map((template) => (
+                  <div
+                    key={template.id}
+                    className="border border-gray-200 rounded-lg p-4 hover:border-purple-300 hover:shadow-md transition-all cursor-pointer group"
+                    onClick={() => handleSelectPreBuiltTemplate(template)}
+                  >
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <h4 className="font-medium text-gray-900 group-hover:text-purple-600 transition-colors">
+                          {template.name}
+                        </h4>
+                        <p className="text-sm text-gray-600 mt-1">
+                          {template.description}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {template.isHtml ? (
+                          <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded">
+                            HTML
+                          </span>
+                        ) : (
+                          <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded">
+                            Text
+                          </span>
+                        )}
+                        <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">
+                          {template.category}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="text-sm text-gray-700 mb-3 line-clamp-2">
+                      <strong>Subject:</strong> {template.subject}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      Click to select this template
+                    </div>
+                  </div>
+                ))}
+            </div>
+
+            <div className="flex items-center justify-end gap-3 mt-6">
+              <button
+                onClick={() => setShowPreBuiltModal(false)}
+                className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Template Modal */}
+      {showEditModal && editingTemplate && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">
+              Edit Template: {editingTemplate.name}
+            </h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Template Name
+                </label>
+                <input
+                  type="text"
+                  value={newTemplate.name}
+                  onChange={(e) =>
+                    setNewTemplate({ ...newTemplate, name: e.target.value })
+                  }
+                  placeholder="Enter template name"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Subject Line
+                </label>
+                <input
+                  type="text"
+                  value={newTemplate.subject}
+                  onChange={(e) =>
+                    setNewTemplate({ ...newTemplate, subject: e.target.value })
+                  }
+                  placeholder="Enter email subject"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Email Content
+                </label>
+                <textarea
+                  value={getCurrentContent()}
+                  onChange={(e) => {
+                    if (inputMethod === "html-code") {
+                      handleHtmlCodeChange(e.target.value);
+                    } else {
+                      setNewTemplate({
+                        ...newTemplate,
+                        content: e.target.value,
+                      });
+                    }
+                  }}
+                  placeholder="Enter email content..."
+                  rows={12}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
+                />
+              </div>
+            </div>
+            <div className="flex items-center justify-end gap-3 mt-6">
+              <button
+                onClick={() => {
+                  setShowEditModal(false);
+                  setEditingTemplate(null);
+                  setNewTemplate({ name: "", subject: "", content: "" });
+                }}
+                className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleUpdateTemplate}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Update Template
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && deletingTemplate && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2 bg-red-100 rounded-lg">
+                <Trash2 className="h-6 w-6 text-red-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-medium text-gray-900">
+                  Delete Template
+                </h3>
+                <p className="text-sm text-gray-600">
+                  This action cannot be undone
+                </p>
+              </div>
+            </div>
+            <div className="mb-6">
+              <p className="text-gray-600 mb-2">
+                Are you sure you want to delete this template?
+              </p>
+              <div className="bg-gray-50 rounded-lg p-3">
+                <p className="font-medium text-gray-900">
+                  {deletingTemplate.name}
+                </p>
+                <p className="text-sm text-gray-600">
+                  {deletingTemplate.subject}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center justify-end gap-3">
+              <button
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setDeletingTemplate(null);
+                }}
+                className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              >
+                Delete Template
               </button>
             </div>
           </div>
