@@ -13,7 +13,7 @@ export const preBuiltTemplates: PreBuiltTemplate[] = [
     id: "app-update-notification",
     name: "App Update Required - FreeSpeek 1.1.5",
     subject:
-      "🚀 Update Your FreeSpeek App - New Features & Improvements Available!",
+      "Update Your FreeSpeek App - New Features & Improvements Available!",
     description:
       "Professional template to notify users to update to the latest app version",
     category: "App Updates",
@@ -99,6 +99,7 @@ export const preBuiltTemplates: PreBuiltTemplate[] = [
             color: #333;
             margin-top: 0;
             font-size: 20px;
+            font-weight:bold
         }
         .feature-list {
             list-style: none;
@@ -240,7 +241,7 @@ export const preBuiltTemplates: PreBuiltTemplate[] = [
                 <strong>⚠️ Important:</strong> Your current app version is outdated. To continue enjoying the best FreeSpeek experience and ensure your data security, please update to the latest version.
             </div>
             <div class="feature-box">
-                <h3>🆕 What's New in Version 1.1.5:</h3>
+                <h3>What's New in Version 1.1.5:</h3>
                 <ul class="feature-list">
                     <li><strong>Enhanced Security:</strong> Improved authentication and data protection</li>
                     <li><strong>Better Performance:</strong> Faster loading times and smoother experience</li>

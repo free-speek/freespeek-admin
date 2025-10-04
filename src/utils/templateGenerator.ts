@@ -87,6 +87,7 @@ export const generateAppUpdateTemplate = (): string => {
             color: #333;
             margin-top: 0;
             font-size: 20px;
+            font-weight: bold;
         }
         .feature-list {
             list-style: none;
@@ -112,6 +113,7 @@ export const generateAppUpdateTemplate = (): string => {
             color: #333;
             font-size: 20px;
             margin-bottom: 15px;
+            font-weight: bold;
         }
         .platform-section {
             background-color: #f8f9fa;
@@ -186,7 +188,7 @@ export const generateAppUpdateTemplate = (): string => {
             width: auto;
         }
         .footer {
-            background-color: #000;
+            background: linear-gradient(135deg, #000 0%, #02FEFE 100%);
             color: #fff;
             padding: 30px 20px;
             text-align: center;
@@ -233,18 +235,18 @@ export const generateAppUpdateTemplate = (): string => {
         <div class="header">
             <div class="logo"></div>
             <h1>FreeSpeek Update Available!</h1>
-            <p>New Features & Improvements in Version 1.1.5</p>
+            <p>New Features & Improvements in Version 1.1.6</p>
         </div>
         <div class="content">
             <div class="greeting">Hello {{userName}},</div>
             <div class="main-text">
-                We're excited to announce that a <strong>new version of FreeSpeek (1.1.5)</strong> is now available with amazing new features and important security improvements!
+                We're excited to announce that a <strong>new version of FreeSpeek (1.1.6)</strong> is now available with amazing new features and important security improvements!
             </div>
             <div class="highlight">
                 <strong>⚠️ Important:</strong> Your current app version is outdated. To continue enjoying the best FreeSpeek experience and ensure your data security, please update to the latest version.
             </div>
             <div class="feature-box">
-                <h3>🆕 What's New in Version 1.1.5:</h3>
+                <h3>What's New in Version 1.1.6:</h3>
                 <ul class="feature-list">
                     <li><strong>Enhanced Security:</strong> Improved authentication and data protection</li>
                     <li><strong>Better Performance:</strong> Faster loading times and smoother experience</li>
