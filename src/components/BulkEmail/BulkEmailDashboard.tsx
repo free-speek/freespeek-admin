@@ -7,7 +7,7 @@ import Recipients from "./Recipients";
 import Analytics from "./Analytics";
 import RecipientGroups from "./RecipientGroups";
 import Groups from "./Groups";
-import { Mail, Plus, TrendingUp } from "lucide-react";
+import { Mail, TrendingUp } from "lucide-react";
 
 const BulkEmailDashboard: React.FC = () => {
   usePageTitle("Bulk Email");
@@ -131,12 +131,12 @@ const BulkEmailDashboard: React.FC = () => {
                   Pre-built Templatessss
                 </button>
               )} */}
-            {activeSection === "recipients" && (
+            {/* {activeSection === "recipients" && (
               <button className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
                 <Plus className="h-4 w-4" />
                 Add Recipient
               </button>
-            )}
+            )} */}
             {activeSection === "analytics" && (
               <button className="flex items-center gap-2 px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
                 <TrendingUp className="h-4 w-4" />
