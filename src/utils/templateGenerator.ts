@@ -165,7 +165,7 @@ export const generateAppUpdateTemplate = (): string => {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 20px;
+            gap: 40px;
             margin: 30px 0;
             flex-wrap: nowrap;
         }
@@ -214,11 +214,11 @@ export const generateAppUpdateTemplate = (): string => {
             .cta-buttons {
                 flex-direction: column;
                 align-items: center;
-                gap: 15px;
+                gap: 25px;
                 padding: 0 20px;
             }
             .cta-button {
-                margin: 5px 0;
+                margin: 10px 0;
                 width: 100%;
                 max-width: 250px;
                 text-align: center;
@@ -244,7 +244,7 @@ export const generateAppUpdateTemplate = (): string => {
             .cta-section table td {
                 display: block !important;
                 width: 100% !important;
-                padding: 10px 0 !important;
+                padding: 15px 0 !important;
                 text-align: center !important;
             }
             .cta-section table td img {
@@ -305,12 +305,12 @@ export const generateAppUpdateTemplate = (): string => {
                 <!-- Email client compatible table layout -->
                 <table width="100%" cellpadding="0" cellspacing="0" style="margin: 30px 0;">
                     <tr>
-                        <td align="center" style="padding: 0 10px;">
+                        <td align="center" style="padding: 0 25px;">
                             <a href="https://apps.apple.com/pk/app/freespeek-app/id6741692095" class="cta-button" style="display: inline-block;">
                                 <img src="${EMAIL_ASSETS.APP_STORE_BUTTON}" alt="Download on App Store" class="store-button" style="display: block; width: 180px; height: 60px; border-radius: 8px;">
                             </a>
                         </td>
-                        <td align="center" style="padding: 0 10px;">
+                        <td align="center" style="padding: 0 25px;">
                             <a href="https://play.google.com/store/apps/details?id=com.freespeek_app" class="cta-button" style="display: inline-block;">
                                 <img src="${EMAIL_ASSETS.GOOGLE_PLAY_BUTTON}" alt="Get it on Google Play" class="store-button" style="display: block; width: 180px; height: 60px; border-radius: 8px;">
                             </a>

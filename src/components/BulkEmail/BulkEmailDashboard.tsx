@@ -7,7 +7,7 @@ import Recipients from "./Recipients";
 import Analytics from "./Analytics";
 import RecipientGroups from "./RecipientGroups";
 import Groups from "./Groups";
-import { Mail, TrendingUp } from "lucide-react";
+import { TrendingUp } from "lucide-react";
 
 const BulkEmailDashboard: React.FC = () => {
   usePageTitle("Bulk Email");
@@ -115,14 +115,14 @@ const BulkEmailDashboard: React.FC = () => {
           <div className="flex items-center gap-3">
             {activeSection === "compose" && (
               <>
-                <button className="flex items-center gap-2 px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                {/* <button className="flex items-center gap-2 px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
                   <Mail className="h-4 w-4" />
                   Fill Sample Data
                 </button>
                 <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                   <Mail className="h-4 w-4" />
                   Send Email
-                </button>
+                </button> */}
               </>
             )}
             {/* {activeSection === "templates" && (

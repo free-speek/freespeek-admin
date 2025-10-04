@@ -34,8 +34,10 @@ const Templates: React.FC = () => {
 
   const filteredTemplates = displayTemplates.filter((template: any) => {
     const matchesSearch =
-      template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      template.subject.toLowerCase().includes(searchTerm.toLowerCase());
+      (template.name &&
+        template.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (template.subject &&
+        template.subject.toLowerCase().includes(searchTerm.toLowerCase()));
     return matchesSearch;
   });
 
@@ -43,8 +45,10 @@ const Templates: React.FC = () => {
     const matchesCategory =
       selectedCategory === "all" || template.category === selectedCategory;
     const matchesSearch =
-      template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      template.subject.toLowerCase().includes(searchTerm.toLowerCase());
+      (template.name &&
+        template.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (template.subject &&
+        template.subject.toLowerCase().includes(searchTerm.toLowerCase()));
     return matchesCategory && matchesSearch;
   });
 
