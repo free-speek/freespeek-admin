@@ -624,6 +624,54 @@ class ApiService {
     });
   }
 
+  // Groups Management
+  async getGroups() {
+    try {
+      const result = await this.request("/admin/bulk-email/groups");
+      return result;
+    } catch (error) {
+      console.error("[API] getGroups() error:", error);
+      throw error;
+    }
+  }
+
+  async createGroup(groupData: {
+    name: string;
+    description?: string;
+    recipients: any[];
+  }) {
+    try {
+      const result = await this.request("/admin/bulk-email/groups", {
+        method: "POST",
+        body: JSON.stringify(groupData),
+      });
+      return result;
+    } catch (error) {
+      console.error("[API] createGroup() error:", error);
+      throw error;
+    }
+  }
+
+  async updateGroup(
+    id: string,
+    groupData: {
+      name: string;
+      description?: string;
+      recipients: any[];
+    }
+  ) {
+    return this.request(`/admin/bulk-email/groups/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(groupData),
+    });
+  }
+
+  async deleteGroup(id: string) {
+    return this.request(`/admin/bulk-email/groups/${id}`, {
+      method: "DELETE",
+    });
+  }
+
   // Health check
   async healthCheck() {
     return this.request("/health");

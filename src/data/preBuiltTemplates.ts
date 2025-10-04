@@ -15,7 +15,7 @@ export const preBuiltTemplates: PreBuiltTemplate[] = [
     id: "app-update-notification",
     name: "App Update Required - FreeSpeek 1.1.5",
     subject:
-      "🚀 Update Your FreeSpeek App - New Features & Improvements Available!",
+      "Update Your FreeSpeek App - New Features & Improvements Available!",
     description:
       "Professional template to notify users to update to the latest app version",
     category: "App Updates",

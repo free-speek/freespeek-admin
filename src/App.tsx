@@ -20,13 +20,9 @@ import SupportChatDetailsPage from "./pages/SupportChatDetailsPage";
 import ChatHistoryPage from "./pages/ChatHistoryPage";
 import ChatDetailsPage from "./pages/ChatDetailsPage";
 import UserProfilePage from "./pages/UserProfilePage";
-import BulkEmailDashboardPage from "./pages/BulkEmailDashboardPage";
-import ComposeEmailPage from "./pages/ComposeEmailPage";
-import RecipientsPage from "./pages/RecipientsPage";
+import BulkEmailDashboard from "./components/BulkEmail/BulkEmailDashboard";
 import TemplatesPage from "./pages/TemplatesPage";
 import TemplateDetailPage from "./pages/TemplateDetailPage";
-import EmailHistoryPage from "./pages/EmailHistoryPage";
-import EmailStatsPage from "./pages/EmailStatsPage";
 import UserTrackingPage from "./pages/UserTrackingPage";
 import Loader from "./components/Loader";
 
@@ -69,16 +65,12 @@ const AppContent: React.FC = () => {
           <Route path="live-users" element={<LiveUsersPage />} />
           <Route path="messages" element={<MessagesPage />} />
           <Route path="support-chats" element={<SupportChatsPage />} />
-          <Route path="bulk-email" element={<BulkEmailDashboardPage />} />
-          <Route path="bulk-email/compose" element={<ComposeEmailPage />} />
-          <Route path="bulk-email/recipients" element={<RecipientsPage />} />
+          <Route path="bulk-email" element={<BulkEmailDashboard />} />
           <Route path="bulk-email/templates" element={<TemplatesPage />} />
           <Route
             path="bulk-email/templates/:id"
             element={<TemplateDetailPage />}
           />
-          <Route path="bulk-email/history" element={<EmailHistoryPage />} />
-          <Route path="bulk-email/statistics" element={<EmailStatsPage />} />
           <Route path="user-tracking" element={<UserTrackingPage />} />
           <Route
             path="support-chat-details/:chatId"

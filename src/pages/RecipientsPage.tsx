@@ -130,7 +130,6 @@ const RecipientsPage: React.FC = () => {
         setIsSearching(false);
       })
       .catch(() => {
-        console.log("Recipients API not available");
         setIsSearching(false);
       });
   }, [dispatch, debouncedSearchTerm, statusFilter, currentPage, pageSize]);
@@ -376,7 +375,6 @@ const RecipientsPage: React.FC = () => {
   };
 
   const handlePageChange = (page: number) => {
-    console.log("Page change requested:", { from: currentPage, to: page });
     setCurrentPage(page);
   };
 
@@ -493,21 +491,6 @@ const RecipientsPage: React.FC = () => {
     selectedRecipients.includes(r.id)
   );
 
-  // Debug pagination info
-  console.log("Pagination Debug:", {
-    totalRecipients,
-    pageSize,
-    currentPage,
-    totalPagesCalculated,
-    startIndex,
-    endIndex,
-    paginatedRecipientsLength: paginatedRecipients.length,
-    recipientsTotalCount,
-    recipientsTotalPages,
-    rawRecipients: recipients,
-    displayRecipients: displayRecipients,
-  });
-
   if (recipientsLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -529,7 +512,7 @@ const RecipientsPage: React.FC = () => {
           </Link>
           <div>
             <h1 className="text-2xl font-bold text-gray-900">
-              Manage Recipients
+              Manage Recipientss
             </h1>
             <p className="text-gray-600">
               Add, edit, and organize your email recipients

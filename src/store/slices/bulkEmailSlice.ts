@@ -47,6 +47,11 @@ interface BulkEmailState {
   isUploading: boolean;
   uploadError: string | null;
   uploadResult: any | null;
+
+  // Groups
+  groups: any[];
+  groupsLoading: boolean;
+  groupsError: string | null;
 }
 
 const initialState: BulkEmailState = {
@@ -82,6 +87,11 @@ const initialState: BulkEmailState = {
   isUploading: false,
   uploadError: null,
   uploadResult: null,
+
+  // Groups
+  groups: [],
+  groupsLoading: false,
+  groupsError: null,
 };
 
 // Async thunks
@@ -268,6 +278,87 @@ export const sendBulkEmail = createAsyncThunk(
       return response;
     } catch (error: any) {
       return rejectWithValue(error.message || "Failed to send bulk email");
+    }
+  }
+);
+
+// Groups async thunks
+export const fetchGroups = createAsyncThunk(
+  "bulkEmail/fetchGroups",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await apiService.getGroups();
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error.message || "Failed to fetch groups");
+    }
+  }
+);
+
+export const createGroup = createAsyncThunk(
+  "bulkEmail/createGroup",
+  async (
+    {
+      name,
+      description,
+      recipients,
+    }: {
+      name: string;
+      description?: string;
+      recipients: any[];
+    },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await apiService.createGroup({
+        name,
+        description,
+        recipients,
+      });
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error.message || "Failed to create group");
+    }
+  }
+);
+
+export const updateGroup = createAsyncThunk(
+  "bulkEmail/updateGroup",
+  async (
+    {
+      id,
+      name,
+      description,
+      recipients,
+    }: {
+      id: string;
+      name: string;
+      description?: string;
+      recipients: any[];
+    },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await apiService.updateGroup(id, {
+        name,
+        description,
+        recipients,
+      });
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error.message || "Failed to update group");
+    }
+  }
+);
+
+export const deleteGroup = createAsyncThunk(
+  "bulkEmail/deleteGroup",
+  async (id: string, { rejectWithValue }) => {
+    try {
+      const response = await apiService.deleteGroup(id);
+      return { id, response };
+    } catch (error: any) {
+      return rejectWithValue(error.message || "Failed to delete group");
     }
   }
 );
@@ -547,6 +638,77 @@ const bulkEmailSlice = createSlice({
       .addCase(uploadRecipientsCsv.rejected, (state, action) => {
         state.isUploading = false;
         state.uploadError = action.payload as string;
+      });
+
+    // Groups
+    builder
+      .addCase(fetchGroups.pending, (state) => {
+        state.groupsLoading = true;
+        state.groupsError = null;
+      })
+      .addCase(fetchGroups.fulfilled, (state, action) => {
+        state.groupsLoading = false;
+        const payload = action.payload as any;
+        state.groups = payload.data?.groups || payload.groups || payload || [];
+        state.groupsError = null;
+      })
+      .addCase(fetchGroups.rejected, (state, action) => {
+        state.groupsLoading = false;
+        state.groupsError = action.payload as string;
+      });
+
+    // Create Group
+    builder
+      .addCase(createGroup.pending, (state) => {
+        state.groupsLoading = true;
+        state.groupsError = null;
+      })
+      .addCase(createGroup.fulfilled, (state, action) => {
+        state.groupsLoading = false;
+        const newGroup = action.payload as any;
+        state.groups.push(newGroup);
+        state.groupsError = null;
+      })
+      .addCase(createGroup.rejected, (state, action) => {
+        state.groupsLoading = false;
+        state.groupsError = action.payload as string;
+      });
+
+    // Update Group
+    builder
+      .addCase(updateGroup.pending, (state) => {
+        state.groupsLoading = true;
+        state.groupsError = null;
+      })
+      .addCase(updateGroup.fulfilled, (state, action) => {
+        state.groupsLoading = false;
+        const updatedGroup = action.payload as any;
+        const index = state.groups.findIndex((g) => g.id === updatedGroup.id);
+        if (index !== -1) {
+          state.groups[index] = updatedGroup;
+        }
+        state.groupsError = null;
+      })
+      .addCase(updateGroup.rejected, (state, action) => {
+        state.groupsLoading = false;
+        state.groupsError = action.payload as string;
+      });
+
+    // Delete Group
+    builder
+      .addCase(deleteGroup.pending, (state) => {
+        state.groupsLoading = true;
+        state.groupsError = null;
+      })
+      .addCase(deleteGroup.fulfilled, (state, action) => {
+        state.groupsLoading = false;
+        const { id } = action.payload as any;
+        state.groups = state.groups.filter((g) => g.id !== id);
+        state.groupsError = null;
+      })
+      .addCase(deleteGroup.rejected, (state, action) => {
+        state.groupsLoading = false;
+        state.groupsError = action.payload as string;
       });
   },
 });
