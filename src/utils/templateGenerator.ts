@@ -164,10 +164,10 @@ export const generateAppUpdateTemplate = (): string => {
         .cta-buttons {
             display: flex;
             justify-content: center;
-            gap: 25px;
-            flex-wrap: wrap;
-            margin: 30px 0;
             align-items: center;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: nowrap;
         }
         .cta-button {
             display: inline-block;
@@ -176,6 +176,7 @@ export const generateAppUpdateTemplate = (): string => {
             border-radius: 8px;
             transition: transform 0.2s ease;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            flex: 0 0 auto;
         }
         .cta-button:hover {
             transform: translateY(-2px);
@@ -183,9 +184,10 @@ export const generateAppUpdateTemplate = (): string => {
         }
         .store-button {
             height: 60px;
+            width: 180px;
             border-radius: 8px;
-            max-width: 180px;
-            width: auto;
+            display: block;
+            object-fit: contain;
         }
         .footer {
             background: linear-gradient(135deg, #000 0%, #02FEFE 100%);
@@ -213,19 +215,43 @@ export const generateAppUpdateTemplate = (): string => {
                 flex-direction: column;
                 align-items: center;
                 gap: 15px;
+                padding: 0 20px;
             }
             .cta-button {
                 margin: 5px 0;
                 width: 100%;
-                max-width: 200px;
+                max-width: 250px;
+                text-align: center;
             }
             .store-button {
                 width: 100%;
-                max-width: 200px;
+                max-width: 250px;
+                height: auto;
+                min-height: 50px;
             }
             .logo {
                 width: 70px;
                 height: 70px;
+            }
+            /* Mobile responsive table layout */
+            .cta-section table {
+                width: 100% !important;
+            }
+            .cta-section table tr {
+                display: block !important;
+                width: 100% !important;
+            }
+            .cta-section table td {
+                display: block !important;
+                width: 100% !important;
+                padding: 10px 0 !important;
+                text-align: center !important;
+            }
+            .cta-section table td img {
+                width: 100% !important;
+                max-width: 250px !important;
+                height: auto !important;
+                min-height: 50px !important;
             }
         }
     </style>
@@ -276,7 +302,23 @@ export const generateAppUpdateTemplate = (): string => {
             </div>
             <div class="cta-section">
                 <h3 style="margin-top: 0; margin-bottom: 20px; color: #333; font-size: 24px;">Download Now</h3>
-                <div class="cta-buttons">
+                <!-- Email client compatible table layout -->
+                <table width="100%" cellpadding="0" cellspacing="0" style="margin: 30px 0;">
+                    <tr>
+                        <td align="center" style="padding: 0 10px;">
+                            <a href="https://apps.apple.com/pk/app/freespeek-app/id6741692095" class="cta-button" style="display: inline-block;">
+                                <img src="${EMAIL_ASSETS.APP_STORE_BUTTON}" alt="Download on App Store" class="store-button" style="display: block; width: 180px; height: 60px; border-radius: 8px;">
+                            </a>
+                        </td>
+                        <td align="center" style="padding: 0 10px;">
+                            <a href="https://play.google.com/store/apps/details?id=com.freespeek_app" class="cta-button" style="display: inline-block;">
+                                <img src="${EMAIL_ASSETS.GOOGLE_PLAY_BUTTON}" alt="Get it on Google Play" class="store-button" style="display: block; width: 180px; height: 60px; border-radius: 8px;">
+                            </a>
+                        </td>
+                    </tr>
+                </table>
+                <!-- Fallback div layout for modern email clients -->
+                <div class="cta-buttons" style="display: none;">
                         <a href="https://apps.apple.com/pk/app/freespeek-app/id6741692095" class="cta-button">
                             <img src="${EMAIL_ASSETS.APP_STORE_BUTTON}" alt="Download on App Store" class="store-button">
                         </a>
