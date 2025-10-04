@@ -446,7 +446,6 @@ const RecipientsPage: React.FC = () => {
   const totalPagesCalculated =
     recipientsTotalPages || calculateTotalPages(totalRecipients);
   const startIndex = (currentPage - 1) * pageSize;
-  const endIndex = Math.min(startIndex + pageSize, totalRecipients);
 
   // Use server-side pagination - display recipients directly from API
   const paginatedRecipients = displayRecipients;
